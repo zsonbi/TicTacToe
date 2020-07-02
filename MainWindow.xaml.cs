@@ -143,6 +143,22 @@ namespace TicTacToe
             }//else
         }
 
+        //---------------------------------------------------------------------------
+        //A játék resetelése
+        private void Reset()
+        {
+            game = new PlayField(y, x, (byte)(Checksize - 1));
+            side = true;
+            over = false;
+            for (int i = 0; i < y; i++)
+            {
+                for (int j = 0; j < x; j++)
+                {
+                    labels[i, j].Content = "";
+                }//for
+            }//for
+        }
+
         //-----------------------------------------------------------------------------------------
         //Ha az ablak mérete változott
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -202,6 +218,30 @@ namespace TicTacToe
                 MessageBox.Show((game.Winner ? "X" : "O") + " Wins");
                 over = true;
             }//if
+        }
+
+        //-----------------------------------------------------------------------
+        //Menu és Reset előhozása
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            //Megvizsgáljuk, hogy CTRL-t nyomja-e
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
+            {
+                //Megnézzük, hogy nyomja-e azokat a gombokat amik kellenek
+                switch (e.Key)
+                {
+                    case Key.R:
+                        Reset();
+                        break;
+
+                    case Key.M:
+                        MessageBox.Show("Menu");
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
     }
 }
