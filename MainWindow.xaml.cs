@@ -29,6 +29,7 @@ namespace TicTacToe
         private PlayField game;
         private byte Checksize = 3;
         private bool over = false;
+        private Menu menu = new Menu();
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
@@ -143,6 +144,22 @@ namespace TicTacToe
             }//else
         }
 
+        //---------------------------------------------------------------------------
+        //A játék resetelése
+        private void Reset()
+        {
+            game = new PlayField(y, x, (byte)(Checksize - 1));
+            side = true;
+            over = false;
+            for (int i = 0; i < y; i++)
+            {
+                for (int j = 0; j < x; j++)
+                {
+                    labels[i, j].Content = "";
+                }//for
+            }//for
+        }
+
         //-----------------------------------------------------------------------------------------
         //Ha az ablak mérete változott
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -202,6 +219,70 @@ namespace TicTacToe
                 MessageBox.Show((game.Winner ? "X" : "O") + " Wins");
                 over = true;
             }//if
+        }
+
+        //-----------------------------------------------------------------------
+        //Menu és Reset előhozása
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            //Megvizsgáljuk, hogy CTRL-t nyomja-e
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
+            {
+                //Megnézzük, hogy nyomja-e azokat a gombokat amik kellenek
+                switch (e.Key)
+                {
+                    case Key.R:
+                        Reset();
+                        break;
+
+                    case Key.M:
+                        menu.Show();
+                        menu.Donebtn.Click += Done_Click;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        //--------------------------------------------------------------------------------
+        //Menüből a tartalom áthozása
+        private void Done_Click(object sender, RoutedEventArgs e)
+        {
+            //Ha illegális érték lenne beírva akkor a default érték lesz
+            if (menu.checksizetbox.Text == "" || Convert.ToByte(menu.checksizetbox.Text) <= 2)
+            {
+                Checksize = 3;
+            }
+            else
+            {
+                Checksize = Convert.ToByte(menu.checksizetbox.Text);
+            }
+            //Az x és y tengely tesztelése
+            if (menu.xtengelytbox.Text == "")
+            {
+                if (menu.ytengelytbox.Text == "")
+                {
+                    x = 3;
+                    y = 3;
+                    return;
+                }
+                else
+                {
+                    y = Convert.ToByte(menu.ytengelytbox.Text);
+                    x = y;
+                    return;
+                }
+            }
+            else
+            {
+                x = Convert.ToByte(menu.xtengelytbox.Text);
+            }
+            if (menu.ytengelytbox.Text == "")
+            {
+                y = x;
+            }
         }
     }
 }
