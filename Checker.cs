@@ -10,20 +10,27 @@ namespace TicTacToe
     internal class Checker
     {
         //Protected Varriables
-        protected cell[,] cells;
 
+        protected cell[,] cells;
         protected byte x;
         protected byte y;
 
         //Varriables
 
         private byte checksize;
-        private bool foundwinner = false;
         private bool winner;
         private sbyte xcord = 0;
         private sbyte ycord = 0;
         private byte counter = 1;
         private byte currentType = 0;
+        private byte[] end = new byte[2];
+        private byte[] start = new byte[2];
+        private bool wintype;
+
+        public byte[] End { get => end; }
+        public byte[] Start { get => start; }
+        public bool Winner { get => winner; }
+        public bool Wintype { get => wintype; }
 
         //-------------------------------------------
         //Konstruktor
@@ -52,11 +59,16 @@ namespace TicTacToe
                 for (byte j = 0; j < x; j++)
                 {
                     if (InsideCheck(i, j))
+                    {
+                        start[0] = i;
+                        start[1] = (byte)(j - checksize);
+                        wintype = false;
                         return true;
-                }
-                counter = 1;
+                    }//if
+                }//for
+                counter = 0;
                 currentType = 0;
-            }
+            }//for
 
             //x tengelyen a vizsgálat
             for (byte i = 0; i < x; i++)
@@ -64,11 +76,16 @@ namespace TicTacToe
                 for (byte j = 0; j < y; j++)
                 {
                     if (InsideCheck(j, i))
+                    {
+                        start[0] = (byte)(j - checksize);
+                        start[1] = i;
+                        wintype = false;
                         return true;
-                }
-                counter = 1;
+                    }//if
+                }//for
+                counter = 0;
                 currentType = 0;
-            }
+            }//for
 
             //x tengely mentén vizsgálat jobbra
             for (sbyte i = 0; i < x; i++)
@@ -78,15 +95,19 @@ namespace TicTacToe
                 {
                     if (InsideCheck((byte)ycord, (byte)xcord))
                     {
+                        wintype = true;
+                        start[0] = (byte)(ycord - checksize);
+                        start[1] = (byte)(xcord - checksize);
                         return true;
                     }
                     xcord++;
                     ycord++;
-                }
+                }//while
                 ycord = 0;
-                counter = 1;
+                counter = 0;
                 currentType = 0;
-            }
+            }//for
+
             xcord = 0;
             //y tengely mentén vizsgálat jobbra
             for (sbyte i = 0; i < y; i++)
@@ -96,13 +117,16 @@ namespace TicTacToe
                 {
                     if (InsideCheck((byte)ycord, (byte)xcord))
                     {
+                        wintype = true;
+                        start[0] = (byte)(ycord - checksize);
+                        start[1] = (byte)(xcord - checksize);
                         return true;
                     }
                     xcord++;
                     ycord++;
                 }
                 xcord = 0;
-                counter = 1;
+                counter = 0;
                 currentType = 0;
             }
             ycord = 0;
@@ -114,13 +138,16 @@ namespace TicTacToe
                 {
                     if (InsideCheck((byte)ycord, (byte)xcord))
                     {
+                        wintype = true;
+                        start[0] = (byte)(ycord - checksize);
+                        start[1] = (byte)(xcord + checksize);
                         return true;
                     }
                     xcord--;
                     ycord++;
                 }
                 ycord = 0;
-                counter = 1;
+                counter = 0;
                 currentType = 0;
             }
             xcord = 0;
@@ -132,18 +159,21 @@ namespace TicTacToe
                 {
                     if (InsideCheck((byte)ycord, (byte)xcord))
                     {
+                        wintype = true;
+                        start[0] = (byte)(ycord - checksize);
+                        start[1] = (byte)(xcord + checksize);
                         return true;
                     }
                     xcord--;
                     ycord++;
                 }
                 xcord = 0;
-                counter = 1;
+                counter = 0;
                 currentType = 0;
             }
             xcord = 0;
             ycord = 0;
-            counter = 1;
+            counter = 0;
             currentType = 0;
             return false;
         }
@@ -159,11 +189,12 @@ namespace TicTacToe
             else
             {
                 currentType = cells[ycord, xcord].Type;
-                counter = 1;
+                counter = 0;
             }
             if (counter == checksize)
             {
-                foundwinner = true;
+                end[0] = ycord;
+                end[1] = xcord;
                 winner = currentType == 1;
                 return true;
             }

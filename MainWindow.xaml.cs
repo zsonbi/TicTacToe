@@ -25,16 +25,17 @@ namespace TicTacToe
         private bool setupped = false;
         private bool side = true;
         private Border[,] szegelyek;
-        private Label[,] labelek;
+        private Label[,] labels;
         private PlayField game;
         private byte Checksize = 3;
+        private bool over = false;
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
         public MainWindow()
         {
             InitializeComponent();
-            labelek = new Label[y, x];
+            labels = new Label[y, x];
             for (int i = 0; i < y; i++)
             {
                 for (int j = 0; j < x; j++)
@@ -50,11 +51,11 @@ namespace TicTacToe
                     Grid.SetRow(label, i);
                     label.Name = "K" + i + "S" + j;
                     Field.Children.Add(label);
-                    labelek[i, j] = label;
-                }
-            }
+                    labels[i, j] = label;
+                }//for
+            }//for
             MakeBorders();
-            game = new PlayField(y, x, Checksize);
+            game = new PlayField(y, x, (byte)(Checksize - 1));
         }
 
         //--------------------------------------------------------------------------------------------
@@ -79,8 +80,8 @@ namespace TicTacToe
                         Field.Children.Add(keret);
                         keret.BorderThickness = new Thickness(9, 9, 9, 9);
                         szegelyek[i, j] = keret;
-                    }
-                }
+                    }//for
+                }//for
                 setupped = true;
                 return;
             }//if
@@ -90,14 +91,19 @@ namespace TicTacToe
                 for (int j = 0; j < x; j++)
                 {
                     szegelyek[i, j].BorderThickness = new Thickness(width, height, width, height);
-                }
-            }
+                }//for
+            }//for
         }
 
         //------------------------------------------------------------------------------------------------
         //A kiválasztás
         private void Select(object sender, MouseButtonEventArgs e)
         {
+            if (over)
+            {
+                return;
+            }
+
             byte chosenx;
             byte choseny;
             Label be = sender as Label;
@@ -127,7 +133,60 @@ namespace TicTacToe
             side = !side;
             if (game.over)
             {
-                MessageBox.Show("");
+                Finish();
+                /*    Line vonal = new Line();
+                    vonal.X1 = game.Start[1] * Convert.ToInt32(Field.ColumnDefinitions.First().ActualWidth);
+                    vonal.Y1 = game.Start[0] * Convert.ToInt32(Field.RowDefinitions.First().ActualHeight);
+                    vonal.X2 = (game.End[1] + 1) * Convert.ToInt32(Field.ColumnDefinitions.First().ActualWidth);
+                    vonal.Y2 = (game.End[0] + 1) * Convert.ToInt32(Field.RowDefinitions.First().ActualHeight);
+
+                    vonal.Stroke = Brushes.Red;
+                    vonal.StrokeThickness = 10;
+                    Main.Children.Add(vonal);*/
+                MessageBox.Show((game.Winner ? "X" : "O") + " Wins");
+                over = true;
+            }//if
+        }
+
+        private void Finish()
+        {
+            if (game.Wintype)
+            {
+                sbyte tempx = (sbyte)game.Start[1];
+                sbyte tempy = (sbyte)game.Start[0];
+                if (tempx > game.End[1])
+                {
+                    while (tempx >= game.End[1])
+                    {
+                        labels[tempy, tempx].Foreground = Brushes.Yellow;
+                        tempx--;
+                        tempy++;
+                    }
+                }
+                else
+                {
+                    while (tempx <= game.End[1])
+                    {
+                        labels[tempy, tempx].Foreground = Brushes.Yellow;
+                        tempx++;
+                        tempy++;
+                    }
+                }
+            }
+            else
+            {
+                byte tempx = game.Start[1];
+                byte tempy = game.Start[0];
+                while (tempx <= game.End[1])
+                {
+                    labels[game.Start[0], tempx].Foreground = Brushes.Yellow;
+                    tempx++;
+                }
+                while (tempy <= game.End[0])
+                {
+                    labels[tempy, game.Start[1]].Foreground = Brushes.Yellow;
+                    tempy++;
+                }
             }
         }
     }
