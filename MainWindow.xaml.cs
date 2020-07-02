@@ -26,6 +26,7 @@ namespace TicTacToe
         private bool side = true;
         private Border[,] szegelyek;
         private Label[,] labelek;
+        private PlayField game;
 
         public MainWindow()
         {
@@ -39,7 +40,7 @@ namespace TicTacToe
                     label.MouseLeftButtonDown += Select;
                     label.FontWeight = FontWeight.FromOpenTypeWeight(500);
                     label.FontSize = 120;
-                    label.Content = "X";
+                    label.Content = "";
                     label.VerticalContentAlignment = VerticalAlignment.Center;
                     label.HorizontalContentAlignment = HorizontalAlignment.Center;
                     Grid.SetColumn(label, j);
@@ -50,6 +51,7 @@ namespace TicTacToe
                 }
             }
             MakeBorders();
+            game = new PlayField(y, x);
         }
 
         private void MakeBorders()
@@ -92,9 +94,30 @@ namespace TicTacToe
             byte chosenx;
             byte choseny;
             Label be = sender as Label;
+            //Ne lehessen felülírni egy választott értéket
+            if (be.Content.ToString() != "")
+            {
+                return;
+            }//if
+            //Melyik oldal jön
+            if (side)
+            {
+                be.Content = "X";
+                be.Foreground = Brushes.Red;
+            }//if
+            else
+            {
+                be.Content = "O";
+                be.Foreground = Brushes.Blue;
+            }//if
+            //Egy ideiglenes string változó
             string stemp = be.Name.Replace('K', ' ');
+            //Meghatározzuk az indexét a kiválasztott elemnek az adatbázisban
             chosenx = Convert.ToByte(stemp.Split('S')[1]);
             choseny = Convert.ToByte(stemp.Split('S')[0]);
+            //A game classban is változtatjuk a cellák értékét (Hogy később majd ne keljen mindig kiolvasni a labelekből)
+            game.Change(choseny, chosenx, side);
+            side = !side;
         }
     }
 }
