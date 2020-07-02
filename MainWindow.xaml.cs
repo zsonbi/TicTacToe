@@ -250,6 +250,7 @@ namespace TicTacToe
         //Menüből a tartalom áthozása
         private void Done_Click(object sender, RoutedEventArgs e)
         {
+            //Ha illegális érték lenne beírva akkor a default érték lesz
             if (menu.checksizetbox.Text == "" || Convert.ToByte(menu.checksizetbox.Text) <= 2)
             {
                 Checksize = 3;
@@ -258,7 +259,7 @@ namespace TicTacToe
             {
                 Checksize = Convert.ToByte(menu.checksizetbox.Text);
             }
-
+            //Az x és y tengely tesztelése
             if (menu.xtengelytbox.Text == "")
             {
                 if (menu.ytengelytbox.Text == "")

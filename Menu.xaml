@@ -36,7 +36,7 @@
             </TextBlock>
         </Label>
         <TextBox x:Name="checksizetbox" Grid.Column="1" Grid.Row="2"  PreviewTextInput="OnlyNumber" LostFocus="checksizetbox_LostFocus" />
-
+        <!--Done gomb-->
         <Button Grid.Row="5" Grid.ColumnSpan="2" Content="Done" Name="Donebtn"></Button>
     </Grid>
 </Window>

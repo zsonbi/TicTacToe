@@ -25,12 +25,16 @@ namespace TicTacToe
             InitializeComponent();
         }
 
+        //-----------------------------------------------------------------
+        //Csak számot lehessen beírni
         private void OnlyNumber(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
+        //-----------------------------------------------------------------
+        //A hibás érték vizsgálata
         private void checksizetbox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox be = sender as TextBox;
@@ -38,17 +42,19 @@ namespace TicTacToe
             {
                 MessageBox.Show("5-nél többet nem ajánlok, de ám legyen");
                 be.Background = Brushes.Yellow;
-            }
+            }//if
             else if (Convert.ToByte(be.Text) <= 2)
             {
                 be.Background = Brushes.Red;
-            }
+            }//else if
             else
             {
                 be.Background = Brushes.Green;
-            }
+            }//else
         }
 
+        //-------------------------------------------------------------------
+        //A hibás értékek vizsgálata a tengelyek Textboxánál
         private void tengelyek_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox be = sender as TextBox;
@@ -56,15 +62,15 @@ namespace TicTacToe
             {
                 MessageBox.Show("32-nél többet nem ajánlok, de ám legyen (lehet nem fog menni)");
                 be.Background = Brushes.Yellow;
-            }
+            }//if
             else if (Convert.ToByte(be.Text) < 3)
             {
                 be.Background = Brushes.Red;
-            }
+            }//else if
             else
             {
                 be.Background = Brushes.Green;
-            }
+            }//else
         }
     }
 }
