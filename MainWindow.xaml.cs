@@ -29,6 +29,8 @@ namespace TicTacToe
         private PlayField game;
         private byte Checksize = 3;
 
+        //---------------------------------------------------------------------------------------------
+        //MainWindow inicializálása
         public MainWindow()
         {
             InitializeComponent();
@@ -55,6 +57,8 @@ namespace TicTacToe
             game = new PlayField(y, x, Checksize);
         }
 
+        //--------------------------------------------------------------------------------------------
+        //A szegélyek megcsinálása
         private void MakeBorders()
         {
             int width = Convert.ToInt32(Field.ColumnDefinitions.First().ActualWidth * 0.05);//A grid egy cellájának a szélességének a 20%-a
@@ -90,6 +94,8 @@ namespace TicTacToe
             }
         }
 
+        //------------------------------------------------------------------------------------------------
+        //A kiválasztás
         private void Select(object sender, MouseButtonEventArgs e)
         {
             byte chosenx;
