@@ -27,6 +27,7 @@ namespace TicTacToe
         private Border[,] szegelyek;
         private Label[,] labelek;
         private PlayField game;
+        private byte Checksize = 3;
 
         public MainWindow()
         {
@@ -51,7 +52,7 @@ namespace TicTacToe
                 }
             }
             MakeBorders();
-            game = new PlayField(y, x);
+            game = new PlayField(y, x, Checksize);
         }
 
         private void MakeBorders()
