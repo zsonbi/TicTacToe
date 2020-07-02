@@ -17,15 +17,16 @@ namespace TicTacToe
 
         //Varriables
 
-        private byte checksize;
-        private bool winner;
-        private sbyte xcord = 0;
-        private sbyte ycord = 0;
-        private byte counter = 1;
-        private byte currentType = 0;
-        private byte[] end = new byte[2];
-        private byte[] start = new byte[2];
+        private byte checksize;//Mennyinek kell kigyülnie a győzelemhe
+        private bool winner;//Ki győzött (true X : false O)
+
+        private byte counter = 0;//Számláló, hogy hány ugyanolyan van egymás után
+        private byte currentType = 0;//A jelenlegi sorozatban levő tipus
+        private byte[] end = new byte[2];//Hol lett a sorozat vége
+        private byte[] start = new byte[2];//Hol kezdődött a sorozat
         private bool wintype;
+
+        //Properties
 
         public byte[] End { get => end; }
         public byte[] Start { get => start; }
@@ -53,6 +54,10 @@ namespace TicTacToe
         //--------------------------------------------
         protected bool Check()
         {
+            //Ideiglenes változók
+            sbyte xcord = 0;
+            sbyte ycord = 0;
+
             //y tengelyen a vizsgálat
             for (byte i = 0; i < y; i++)
             {
@@ -99,7 +104,7 @@ namespace TicTacToe
                         start[0] = (byte)(ycord - checksize);
                         start[1] = (byte)(xcord - checksize);
                         return true;
-                    }
+                    }//if
                     xcord++;
                     ycord++;
                 }//while
@@ -121,10 +126,10 @@ namespace TicTacToe
                         start[0] = (byte)(ycord - checksize);
                         start[1] = (byte)(xcord - checksize);
                         return true;
-                    }
+                    }//if
                     xcord++;
                     ycord++;
-                }
+                }//while
                 xcord = 0;
                 counter = 0;
                 currentType = 0;
@@ -142,14 +147,14 @@ namespace TicTacToe
                         start[0] = (byte)(ycord - checksize);
                         start[1] = (byte)(xcord + checksize);
                         return true;
-                    }
+                    }//if
                     xcord--;
                     ycord++;
-                }
+                }//while
                 ycord = 0;
                 counter = 0;
                 currentType = 0;
-            }
+            }//for
             xcord = 0;
             //y tengely mentén vizsgálat balra
             for (sbyte i = (sbyte)(x - 1); i >= 0; i--)
@@ -163,14 +168,14 @@ namespace TicTacToe
                         start[0] = (byte)(ycord - checksize);
                         start[1] = (byte)(xcord + checksize);
                         return true;
-                    }
+                    }//if
                     xcord--;
                     ycord++;
-                }
+                }//while
                 xcord = 0;
                 counter = 0;
                 currentType = 0;
-            }
+            }//for
             xcord = 0;
             ycord = 0;
             counter = 0;
