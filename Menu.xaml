@@ -5,7 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicTacToe"
         mc:Ignorable="d"
-        Title="Menu" Height="400" Width="400">
+        Title="Menu" Height="400" Width="400" ResizeMode="NoResize">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.11*" />
+            <RowDefinition Height="0.11*" />
+            <RowDefinition Height="0.17*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="0.1*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!--X tengely-->
+        <Label Content="X tengelyen a szélessége:" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" />
+        <TextBox x:Name="xtengelytbox" Grid.Column="1" Grid.Row="0" PreviewTextInput="OnlyNumber" LostFocus="tengelyek_LostFocus" />
+
+        <!--Y tengely-->
+        <Label Content="Y tengelyen a szélessége:" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" />
+        <TextBox x:Name="ytengelytbox" Grid.Column="1" Grid.Row="1"  PreviewTextInput="OnlyNumber" LostFocus="tengelyek_LostFocus" />
+
+        <!--Checksize-->
+        <Label  Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right">
+            <TextBlock HorizontalAlignment="Right">
+             Mennyinek kell<LineBreak /> kigyülnie a
+             győzelelemhez:
+            </TextBlock>
+        </Label>
+        <TextBox x:Name="checksizetbox" Grid.Column="1" Grid.Row="2"  PreviewTextInput="OnlyNumber" LostFocus="checksizetbox_LostFocus" />
+
+        <Button Grid.Row="5" Grid.ColumnSpan="2" Content="Done" Name="Donebtn"></Button>
     </Grid>
 </Window>

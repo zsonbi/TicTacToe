@@ -29,6 +29,7 @@ namespace TicTacToe
         private PlayField game;
         private byte Checksize = 3;
         private bool over = false;
+        private Menu menu = new Menu();
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
@@ -235,13 +236,51 @@ namespace TicTacToe
                         break;
 
                     case Key.M:
-                        Menu menu = new Menu();
                         menu.Show();
+                        menu.Donebtn.Click += Done_Click;
                         break;
 
                     default:
                         break;
                 }
+            }
+        }
+
+        //--------------------------------------------------------------------------------
+        //Menüből a tartalom áthozása
+        private void Done_Click(object sender, RoutedEventArgs e)
+        {
+            if (menu.checksizetbox.Text == "" || Convert.ToByte(menu.checksizetbox.Text) <= 2)
+            {
+                Checksize = 3;
+            }
+            else
+            {
+                Checksize = Convert.ToByte(menu.checksizetbox.Text);
+            }
+
+            if (menu.xtengelytbox.Text == "")
+            {
+                if (menu.ytengelytbox.Text == "")
+                {
+                    x = 3;
+                    y = 3;
+                    return;
+                }
+                else
+                {
+                    y = Convert.ToByte(menu.ytengelytbox.Text);
+                    x = y;
+                    return;
+                }
+            }
+            else
+            {
+                x = Convert.ToByte(menu.xtengelytbox.Text);
+            }
+            if (menu.ytengelytbox.Text == "")
+            {
+                y = x;
             }
         }
     }

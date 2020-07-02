@@ -18,7 +18,6 @@
             <Label Content="A játék resetelése: CTRL+R" DockPanel.Dock="Right" />
             <Label Content="Menü: CTRL+M" DockPanel.Dock="Left" />
         </DockPanel>
-
         <!--Játéktér-->
         <Grid Name="Field" VerticalAlignment="Center" Grid.Row="0">
             <Grid.ColumnDefinitions>
