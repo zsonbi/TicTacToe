@@ -27,7 +27,10 @@ namespace TicTacToe
         private Border[,] szegelyek;
         private Label[,] labelek;
         private PlayField game;
+        private byte Checksize = 3;
 
+        //---------------------------------------------------------------------------------------------
+        //MainWindow inicializálása
         public MainWindow()
         {
             InitializeComponent();
@@ -51,9 +54,11 @@ namespace TicTacToe
                 }
             }
             MakeBorders();
-            game = new PlayField(y, x);
+            game = new PlayField(y, x, Checksize);
         }
 
+        //--------------------------------------------------------------------------------------------
+        //A szegélyek megcsinálása
         private void MakeBorders()
         {
             int width = Convert.ToInt32(Field.ColumnDefinitions.First().ActualWidth * 0.05);//A grid egy cellájának a szélességének a 20%-a
@@ -89,6 +94,8 @@ namespace TicTacToe
             }
         }
 
+        //------------------------------------------------------------------------------------------------
+        //A kiválasztás
         private void Select(object sender, MouseButtonEventArgs e)
         {
             byte chosenx;
@@ -118,6 +125,10 @@ namespace TicTacToe
             //A game classban is változtatjuk a cellák értékét (Hogy később majd ne keljen mindig kiolvasni a labelekből)
             game.Change(choseny, chosenx, side);
             side = !side;
+            if (game.over)
+            {
+                MessageBox.Show("");
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,26 +8,13 @@ using System.Windows.Annotations;
 
 namespace TicTacToe
 {
-    internal class PlayField
+    internal class PlayField : Checker
     {
-        private cell[,] cells;
-        private byte x;
-        private byte y;
+        public bool over { get => base.Check(); }
 
         //Konstruktor
-        public PlayField(byte y, byte x)
+        public PlayField(byte y, byte x, byte Checksize) : base(y, x, Checksize)
         {
-            this.x = x;
-            this.y = y;
-            cells = new cell[y, x];
-            //Feltöltjük a cells-t 2d-s tömböt
-            for (int i = 0; i < y; i++)
-            {
-                for (int j = 0; j < x; j++)
-                {
-                    cells[i, j] = new cell();
-                }//for
-            }//for
         }
 
         //Az állapot változtatása
