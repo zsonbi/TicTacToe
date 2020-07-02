@@ -235,7 +235,8 @@ namespace TicTacToe
                         break;
 
                     case Key.M:
-                        MessageBox.Show("Menu");
+                        Menu menu = new Menu();
+                        menu.Show();
                         break;
 
                     default:
