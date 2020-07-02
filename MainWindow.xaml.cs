@@ -48,6 +48,7 @@ namespace TicTacToe
                     label.Content = "";
                     label.VerticalContentAlignment = VerticalAlignment.Center;
                     label.HorizontalContentAlignment = HorizontalAlignment.Center;
+                    label.Padding = new Thickness(0, 0, 0, 0);
                     Grid.SetColumn(label, j);
                     Grid.SetRow(label, i);
                     label.Name = "K" + i + "S" + j;
@@ -266,12 +267,14 @@ namespace TicTacToe
                 {
                     x = 3;
                     y = 3;
+                    menu.Close();
                     return;
                 }
                 else
                 {
                     y = Convert.ToByte(menu.ytengelytbox.Text);
                     x = y;
+                    menu.Close();
                     return;
                 }
             }
@@ -283,6 +286,14 @@ namespace TicTacToe
             {
                 y = x;
             }
+            menu.Close();
+        }
+
+        //----------------------------------------------------------------------------------------
+        //Leálljon minden amikor kell
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            menu.Close();
         }
     }
 }

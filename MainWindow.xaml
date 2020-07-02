@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicTacToe"
         mc:Ignorable="d"
+        Closing="Window_Closing"
         Title="TicTacToe" Height="600" Width="600" SizeChanged="Window_SizeChanged" KeyDown="Window_KeyDown">
     <Grid x:Name="Main">
         <Grid.RowDefinitions>
