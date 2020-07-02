@@ -125,6 +125,10 @@ namespace TicTacToe
             //A game classban is változtatjuk a cellák értékét (Hogy később majd ne keljen mindig kiolvasni a labelekből)
             game.Change(choseny, chosenx, side);
             side = !side;
+            if (game.over)
+            {
+                MessageBox.Show("");
+            }
         }
     }
 }
