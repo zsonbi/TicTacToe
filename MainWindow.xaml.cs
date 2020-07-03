@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,52 +23,30 @@ namespace TicTacToe
     {
         private byte x = 3;
         private byte y = 3;
-        private bool setupped = false;
-        private bool side = true;
+        private bool setupped;
+        private bool side;
         private Border[,] szegelyek;
         private Label[,] labels;
         private PlayField game;
         private byte Checksize = 3;
-        private bool over = false;
+        private bool over;
         private Menu menu = new Menu();
+        private bool inprogress;
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
         public MainWindow()
         {
             InitializeComponent();
-            labels = new Label[y, x];
-            for (int i = 0; i < y; i++)
-            {
-                for (int j = 0; j < x; j++)
-                {
-                    Label label = new Label();
-                    label.MouseLeftButtonDown += Select;
-                    label.FontWeight = FontWeight.FromOpenTypeWeight(700);
-                    label.FontSize = 120;
-                    label.Content = "";
-                    label.VerticalContentAlignment = VerticalAlignment.Center;
-                    label.HorizontalContentAlignment = HorizontalAlignment.Center;
-                    label.Padding = new Thickness(0, 0, 0, 0);
-                    Grid.SetColumn(label, j);
-                    Grid.SetRow(label, i);
-                    label.Name = "K" + i + "S" + j;
-                    Field.Children.Add(label);
-                    labels[i, j] = label;
-                }//for
-            }//for
-            //Szegélyek megcsinálása
-            MakeBorders();
-            //A játék adatbázisának megcsinálása
-            game = new PlayField(y, x, (byte)(Checksize - 1));
+            SetupWindow();
         }
 
         //--------------------------------------------------------------------------------------------
         //A szegélyek megcsinálása
         private void MakeBorders()
         {
-            int width = Convert.ToInt32(Field.ColumnDefinitions.First().ActualWidth * 0.05);//A grid egy cellájának a szélességének a 20%-a
-            int height = Convert.ToInt32(Field.RowDefinitions.First().ActualHeight * 0.05);//A grid egy cellájának a Magasságának a 20%-a
+            int width = Convert.ToInt32(Field.ActualWidth / Field.ColumnDefinitions.Count / 20);//A grid egy cellájának a szélességének a 20%-a
+            int height = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count / 20);//A grid egy cellájának a Magasságának a 20%-a
             //Ha még nem lett megcsinálva
             if (!setupped)
             {
@@ -161,24 +140,36 @@ namespace TicTacToe
             }//for
         }
 
-        //-----------------------------------------------------------------------------------------
-        //Ha az ablak mérete változott
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        //--------------------------------------------------------------------------------
+        //Az elemek méretének igazítása
+        private void AdjustSize()
         {
+            //Szegélyek frissítése
             MakeBorders();
+            //A Labelek méretének frissítése
+            int size = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85);
             for (int i = 0; i < y; i++)
             {
                 for (int j = 0; j < x; j++)
                 {
-                    labels[i, j].FontSize = Convert.ToInt32(Field.RowDefinitions.First().ActualHeight * 0.8);
-                }
-            }
+                    labels[i, j].FontSize = size;
+                }//for
+            }//for
+        }
+
+        //-----------------------------------------------------------------------------------------
+        //Ha az ablak mérete változott
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            AdjustSize();
         }
 
         //------------------------------------------------------------------------------------------------
         //A kiválasztás
         private void Select(object sender, MouseButtonEventArgs e)
         {
+            //Hogy a játék már folyamatban van
+            inprogress = true;
             //Ha vége van a játéknak ne lehessen bele matatni
             if (over)
             {
@@ -233,7 +224,11 @@ namespace TicTacToe
                 switch (e.Key)
                 {
                     case Key.R:
-                        Reset();
+                        //Biztos resetelni akarja-e
+                        if (MessageBox.Show("A játék resetelése", "Kérdés", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            Reset();
+                        }//if
                         break;
 
                     case Key.M:
@@ -251,15 +246,23 @@ namespace TicTacToe
         //Menüből a tartalom áthozása
         private void Done_Click(object sender, RoutedEventArgs e)
         {
+            if (inprogress)
+            {
+                if (MessageBox.Show("A játék folyamatban van biztos akarod?", "Kérdés", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             //Ha illegális érték lenne beírva akkor a default érték lesz
             if (menu.checksizetbox.Text == "" || Convert.ToByte(menu.checksizetbox.Text) <= 2)
             {
                 Checksize = 3;
-            }
+            }//if
             else
             {
                 Checksize = Convert.ToByte(menu.checksizetbox.Text);
-            }
+            }//else
             //Az x és y tengely tesztelése
             if (menu.xtengelytbox.Text == "")
             {
@@ -267,26 +270,35 @@ namespace TicTacToe
                 {
                     x = 3;
                     y = 3;
-                    menu.Close();
+                    menu.Hide();
                     return;
-                }
+                }//if
                 else
                 {
                     y = Convert.ToByte(menu.ytengelytbox.Text);
                     x = y;
-                    menu.Close();
+                    menu.Hide();
                     return;
-                }
-            }
+                }//else
+            }//if
             else
             {
                 x = Convert.ToByte(menu.xtengelytbox.Text);
-            }
+            }//else
             if (menu.ytengelytbox.Text == "")
             {
                 y = x;
-            }
-            menu.Close();
+            }//if
+            else
+            {
+                y = Convert.ToByte(menu.ytengelytbox.Text);
+            }//else
+            //Elrejtjük a menüt
+            menu.Hide();
+            //Újra megcsináljuk az ablak felépítését
+            SetupWindow();
+            //A méretek frissítése
+            AdjustSize();
         }
 
         //----------------------------------------------------------------------------------------
@@ -294,6 +306,60 @@ namespace TicTacToe
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             menu.Close();
+        }
+
+        //-----------------------------------------------------------------------------------------
+        //SetupWindow
+        private void SetupWindow()
+        {
+            //Resetel mindent, ha a menüből indult ez egyébként pedig ezek az alap értékek
+            inprogress = false;
+            setupped = false;
+            side = true;
+            over = false;
+            //Reseteli az ablakot
+            Field.Children.Clear();
+            Field.ColumnDefinitions.Clear();
+            Field.RowDefinitions.Clear();
+
+            //A megfelelő számú RowDefinition hozzáadása
+            for (int i = 0; i < y; i++)
+            {
+                Field.RowDefinitions.Add(new RowDefinition());
+            }
+            //A megfelelő számú ColumnDefinition hozzáadása
+            for (int i = 0; i < x; i++)
+            {
+                Field.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+            //Labelek írásának mérete
+            int size = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85) == 0 ? 150 : Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85);
+            //Labelek megcsinálása (később lehet képek lesznek)
+            labels = new Label[y, x];
+            for (int i = 0; i < y; i++)
+            {
+                for (int j = 0; j < x; j++)
+                {
+                    Label label = new Label();
+                    label.MouseLeftButtonDown += Select;
+                    label.FontWeight = FontWeight.FromOpenTypeWeight(700);
+                    label.FontSize = size;
+                    label.Content = "";
+                    label.VerticalContentAlignment = VerticalAlignment.Center;
+                    label.HorizontalContentAlignment = HorizontalAlignment.Center;
+                    label.Padding = new Thickness(0, 0, 0, 0);
+                    Grid.SetColumn(label, j);
+                    Grid.SetRow(label, i);
+                    label.Name = "K" + i + "S" + j;
+                    Field.Children.Add(label);
+                    labels[i, j] = label;
+                }//for
+            }//for
+
+            //Szegélyek megcsinálása
+            MakeBorders();
+            //A játék adatbázisának megcsinálása
+            game = new PlayField(y, x, (byte)(Checksize - 1));
         }
     }
 }
