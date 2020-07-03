@@ -21,23 +21,24 @@ namespace TicTacToe
     /// </summary>
     public partial class MainWindow : Window
     {
-        private byte x = 3;
-        private byte y = 3;
-        private bool setupped;
-        private bool side;
-        private Border[,] szegelyek;
-        private Label[,] labels;
-        private PlayField game;
-        private byte Checksize = 3;
-        private bool over;
-        private Menu menu = new Menu();
-        private bool inprogress;
+        private byte x = 3;//Alapértelmezetten x tengely méret (3)
+        private byte y = 3;//Alapértelmezetten y tengely méret (3)
+        private bool setupped;//Már meglett-e csinálva a render
+        private bool side;//Melyik oldal jön
+        private Border[,] szegelyek;//A szegelyeket letároljuk, hogy amikor méretet frissítünk tudjuk majd frissíteni
+        private Label[,] labels;//A labeleket letároljuk, hogy amikor méretet frissítünk tudjuk majd frissíteni
+        private PlayField game;//Játéknak az adatbázisa
+        private byte Checksize = 3;//Alapértelmezetten mennyinek kell kigyülnie a győzelemhez (3)
+        private bool over;//Valaki nyert-e már
+        private Menu menu = new Menu();//A menu ablak megcsinálása
+        private bool inprogress;//A játék folyamatba van-e
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
         public MainWindow()
         {
             InitializeComponent();
+            //A játékmező megcsinálása
             SetupWindow();
         }
 

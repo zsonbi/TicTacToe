@@ -31,8 +31,8 @@
         <!--Checksize-->
         <Label  Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right">
             <TextBlock HorizontalAlignment="Right">
-             Mennyinek kell<LineBreak /> kigyülnie a
-             győzelelemhez:
+             Mennyinek kell<LineBreak />
+                kigyülnie a győzelelemhez:
             </TextBlock>
         </Label>
         <TextBox x:Name="checksizetbox" Grid.Column="1" Grid.Row="2"  PreviewTextInput="OnlyNumber" LostFocus="checksizetbox_LostFocus" />

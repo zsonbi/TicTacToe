@@ -12,8 +12,8 @@ namespace TicTacToe
         //Protected Varriables
 
         protected cell[,] cells;
-        protected byte x;
-        protected byte y;
+        protected byte x;//A játéktér mérete x tengelyen
+        protected byte y;//A játéktér mérete y tengelyen
 
         //Varriables
 
@@ -23,7 +23,7 @@ namespace TicTacToe
         private byte currentType = 0;//A jelenlegi sorozatban levő tipus
         private byte[] end = new byte[2];//Hol lett a sorozat vége
         private byte[] start = new byte[2];//Hol kezdődött a sorozat
-        private bool wintype;
+        private bool wintype; //Hogyan győzött (true a győztes cellák egymás mellett false pedig, ha srégen)
 
         //Properties
 
@@ -186,15 +186,18 @@ namespace TicTacToe
         //Az ismétlés csökkentése
         private bool InsideCheck(byte ycord, byte xcord)
         {
+            //Ha ugyanaz a fajta a mostani mint az előző cellában levő és nem üres
             if (cells[ycord, xcord].Type == currentType && currentType != 0)
             {
                 counter++;
-            }
+            }//if
+            //Egyébként resetáljuk a számlálót és az előző tipust frissítjük
             else
             {
                 currentType = cells[ycord, xcord].Type;
                 counter = 0;
             }
+            //Ha kigyült sorozatba annyi, hogy eldőlt a győztes
             if (counter == checksize)
             {
                 end[0] = ycord;
