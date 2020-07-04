@@ -20,11 +20,13 @@
             <Label Content="Menü: CTRL+M" DockPanel.Dock="Left" />
         </DockPanel>
         <!--Játéktér-->
-        <Grid Name="Field" VerticalAlignment="Center" Grid.Row="0">
-            <Grid.ColumnDefinitions>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-            </Grid.RowDefinitions>
-        </Grid>
+        <Border BorderThickness="5" BorderBrush="Black">
+            <Grid Name="Field" VerticalAlignment="Center" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                </Grid.RowDefinitions>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

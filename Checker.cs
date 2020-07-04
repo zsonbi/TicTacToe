@@ -54,9 +54,10 @@ namespace TicTacToe
         protected bool Check()
         {
             //Ideiglenes változók
-            sbyte xcord = 0;
+            sbyte xcord;
             sbyte ycord = 0;
-
+            counter = 0;
+            currentType = 0;
             //y tengelyen a vizsgálat
             for (byte i = 0; i < y; i++)
             {
@@ -175,10 +176,7 @@ namespace TicTacToe
                 counter = 0;
                 currentType = 0;
             }//for
-            xcord = 0;
-            ycord = 0;
-            counter = 0;
-            currentType = 0;
+
             return false;
         }
 
@@ -196,7 +194,7 @@ namespace TicTacToe
             {
                 currentType = cells[ycord, xcord].Type;
                 counter = 0;
-            }
+            }//else
             //Ha kigyült sorozatba annyi, hogy eldőlt a győztes
             if (counter == checksize)
             {
@@ -204,7 +202,7 @@ namespace TicTacToe
                 end[1] = xcord;
                 winner = currentType == 1;
                 return true;
-            }
+            }//if
             return false;
         }
     }

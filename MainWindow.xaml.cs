@@ -225,11 +225,15 @@ namespace TicTacToe
                 switch (e.Key)
                 {
                     case Key.R:
-                        //Biztos resetelni akarja-e
-                        if (MessageBox.Show("A játék resetelése", "Kérdés", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        if (!over)
                         {
-                            Reset();
-                        }//if
+                            //Biztos resetelni akarja-e
+                            if (MessageBox.Show("A játék resetelése", "Kérdés", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                            {
+                                return;
+                            }//if
+                        }
+                        Reset();
                         break;
 
                     case Key.M:
