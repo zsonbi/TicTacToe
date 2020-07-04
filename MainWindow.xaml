@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicTacToe"
         mc:Ignorable="d"
-        Title="TicTacToe" Height="600" Width="600" SizeChanged="Window_SizeChanged" KeyDown="Window_KeyDown">
+        Closing="Window_Closing"
+        Title="TicTacToe" MinHeight="300" MinWidth="300" Height="600" Width="600" SizeChanged="Window_SizeChanged" KeyDown="Window_KeyDown">
     <Grid x:Name="Main">
         <Grid.RowDefinitions>
             <RowDefinition Height="2*" />
-            <RowDefinition Height="0.1*" />
+            <RowDefinition Height="25px" />
         </Grid.RowDefinitions>
 
         <!--ToolTip-->
@@ -19,17 +20,13 @@
             <Label Content="Menü: CTRL+M" DockPanel.Dock="Left" />
         </DockPanel>
         <!--Játéktér-->
-        <Grid Name="Field" VerticalAlignment="Center" Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-        </Grid>
+        <Border BorderThickness="5" BorderBrush="Black">
+            <Grid Name="Field" VerticalAlignment="Center" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                </Grid.RowDefinitions>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
