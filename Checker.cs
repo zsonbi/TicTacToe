@@ -93,7 +93,7 @@ namespace TicTacToe
             }//for
 
             //x tengely mentén vizsgálat jobbra
-            for (sbyte i = 0; i < x; i++)
+            for (sbyte i = 0; i < x - checksize; i++)
             {
                 xcord = i;
                 while (xcord < x && ycord < y)
@@ -115,7 +115,7 @@ namespace TicTacToe
 
             xcord = 0;
             //y tengely mentén vizsgálat jobbra
-            for (sbyte i = 0; i < y; i++)
+            for (sbyte i = 0; i < y - checksize; i++)
             {
                 ycord = i;
                 while (xcord < x && ycord < y)
@@ -136,7 +136,7 @@ namespace TicTacToe
             }
             ycord = 0;
             //x tengely mentén vizsgálat balra
-            for (sbyte i = (sbyte)(x - 1); i >= 0; i--)
+            for (sbyte i = (sbyte)(x - 1); i >= checksize; i--)
             {
                 xcord = i;
                 while (xcord >= 0 && ycord < y)
@@ -155,9 +155,9 @@ namespace TicTacToe
                 counter = 0;
                 currentType = 0;
             }//for
-            xcord = 0;
+            xcord = (sbyte)(x - 1);
             //y tengely mentén vizsgálat balra
-            for (sbyte i = (sbyte)(x - 1); i >= 0; i--)
+            for (sbyte i = (sbyte)(y - 1 - checksize); i >= 0; i--)
             {
                 ycord = i;
                 while (xcord >= 0 && ycord < y)
@@ -172,7 +172,7 @@ namespace TicTacToe
                     xcord--;
                     ycord++;
                 }//while
-                xcord = 0;
+                xcord = (sbyte)(x - 1);
                 counter = 0;
                 currentType = 0;
             }//for
