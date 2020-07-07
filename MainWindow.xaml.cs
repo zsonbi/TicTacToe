@@ -32,6 +32,8 @@ namespace TicTacToe
         private bool over;//Valaki nyert-e már
         private Menu menu = new Menu();//A menu ablak megcsinálása
         private bool inprogress;//A játék folyamatba van-e
+        private bool AIcontrolled = false;
+        private AI ai;
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
@@ -298,10 +300,24 @@ namespace TicTacToe
             {
                 y = Convert.ToByte(menu.ytengelytbox.Text);
             }//else
+
             //Elrejtjük a menüt
             menu.Hide();
+
             //Újra megcsináljuk az ablak felépítését
             SetupWindow();
+
+            //Az AI megcsinálása, ha igényli a felhasználó
+            if ((bool)menu.AIcheck.IsChecked)
+            {
+                AIcontrolled = true;
+                ai = new AI(game);
+            }//if
+            else
+            {
+                AIcontrolled = false;
+            }//else
+
             //A méretek frissítése
             AdjustSize();
         }

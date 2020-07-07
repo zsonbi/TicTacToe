@@ -17,6 +17,10 @@ namespace TicTacToe
         {
         }
 
+        public PlayField(PlayField be) : base(be.Y, be.X, be.Checksize)
+        {
+        }
+
         //Az állapot változtatása
         public void Change(byte ycord, byte xcord, bool state)
         {

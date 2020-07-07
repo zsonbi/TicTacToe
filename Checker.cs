@@ -12,11 +12,11 @@ namespace TicTacToe
         //Protected Varriables
 
         protected cell[,] cells;
-        protected byte x;//A játéktér mérete x tengelyen
-        protected byte y;//A játéktér mérete y tengelyen
 
         //Varriables
 
+        private byte x;//A játéktér mérete x tengelyen
+        private byte y;//A játéktér mérete y tengelyen
         private byte checksize;//Mennyinek kell kigyülnie a győzelemhe
         private bool winner;//Ki győzött (true X : false O)
         private byte counter = 0;//Számláló, hogy hány ugyanolyan van egymás után
@@ -31,6 +31,9 @@ namespace TicTacToe
         public byte[] Start { get => start; }
         public bool Winner { get => winner; }
         public bool Wintype { get => wintype; }
+        public byte Checksize { get => checksize; }
+        public byte X { get => x; }
+        public byte Y { get => y; }
 
         //-------------------------------------------
         //Konstruktor
