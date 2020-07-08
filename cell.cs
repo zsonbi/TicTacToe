@@ -17,9 +17,17 @@ namespace TicTacToe
 
         //------------------------------------------------------------------------
         //Konstruktor
+        //A basic
         public cell()
         {
             type = 0;
+        }
+
+        //Konstruktor
+        //Ha másolni szeretnénk
+        public cell(byte type)
+        {
+            this.type = type;
         }
 
         //------------------------------------------------------------------------

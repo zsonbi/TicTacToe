@@ -32,8 +32,10 @@ namespace TicTacToe
         private bool over;//Valaki nyert-e már
         private Menu menu = new Menu();//A menu ablak megcsinálása
         private bool inprogress;//A játék folyamatba van-e
-        private bool AIcontrolled = false;
-        private AI ai;
+        private bool AIcontrolled = false; //AI játszik-e
+        private AI ai;//Az ai maga
+        private bool aiside;//Az ai melyik oldalt képviseli
+        private readonly Random rnd = new Random();//Egy szimpla random
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
@@ -132,7 +134,6 @@ namespace TicTacToe
         private void Reset()
         {
             game = new PlayField(y, x, (byte)(Checksize - 1));
-            side = true;
             over = false;
             for (int i = 0; i < y; i++)
             {
@@ -141,6 +142,13 @@ namespace TicTacToe
                     labels[i, j].Content = "";
                 }//for
             }//for
+            //Ha AI van
+            if (AIcontrolled)
+            {
+                InitializeAI();
+            }
+            else
+                side = true;
         }
 
         //--------------------------------------------------------------------------------
@@ -160,6 +168,112 @@ namespace TicTacToe
             }//for
         }
 
+        //-----------------------------------------------------------------------------------------
+        //Ez csinálja meg az egész játékteret és állítja be a változókat
+        private void SetupWindow()
+        {
+            //Resetel mindent, ha a menüből indult ez egyébként pedig ezek az alap értékek
+            inprogress = false;
+            setupped = false;
+            side = true;
+            over = false;
+            //Reseteli az ablakot
+            Field.Children.Clear();
+            Field.ColumnDefinitions.Clear();
+            Field.RowDefinitions.Clear();
+
+            //A megfelelő számú RowDefinition hozzáadása
+            for (int i = 0; i < y; i++)
+            {
+                Field.RowDefinitions.Add(new RowDefinition());
+            }
+            //A megfelelő számú ColumnDefinition hozzáadása
+            for (int i = 0; i < x; i++)
+            {
+                Field.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+            //Labelek írásának mérete
+            int size = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85) == 0 ? 150 : Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85);
+            //Labelek megcsinálása (később lehet képek lesznek)
+            labels = new Label[y, x];
+            for (int i = 0; i < y; i++)
+            {
+                for (int j = 0; j < x; j++)
+                {
+                    Label label = new Label();
+                    label.MouseLeftButtonDown += Select;
+                    label.FontWeight = FontWeight.FromOpenTypeWeight(700);
+                    label.FontSize = size;
+                    label.Content = "";
+                    label.VerticalContentAlignment = VerticalAlignment.Center;
+                    label.HorizontalContentAlignment = HorizontalAlignment.Center;
+                    label.Padding = new Thickness(0, 0, 0, 0);
+                    Grid.SetColumn(label, j);
+                    Grid.SetRow(label, i);
+                    label.Name = "K" + i + "S" + j;
+                    Field.Children.Add(label);
+                    labels[i, j] = label;
+                }//for
+            }//for
+
+            //Szegélyek megcsinálása
+            MakeBorders();
+            //A játék adatbázisának megcsinálása
+            game = new PlayField(y, x, (byte)(Checksize - 1));
+
+            if (AIcontrolled)
+            {
+                InitializeAI();
+            }//if
+        }
+
+        //------------------------------------------------------------
+        //Az AI bevitele a rendszerbe
+        private void InitializeAI()
+        {
+            //Az AI melyik oldalt fog játszani
+            if ((bool)menu.randomradiobutton.IsChecked)
+            {
+                side = rnd.Next(0, 2) == 0;
+            }//if
+            else if ((bool)menu.Xradiobutton.IsChecked)
+            {
+                side = false;
+            }//else if
+            else
+            {
+                side = true;
+            }//else
+            aiside = !side;
+            ai = new AI(game, aiside);
+            //Ha az AI jön elsőnek
+            if (aiside)
+            {
+                byte[] temp = ai.next().Result;
+                game.Change(temp[0], temp[1], aiside);
+                //A label frissítése
+                ChangeLabel(aiside, temp[0], temp[1]);
+            }//if
+        }
+
+        //----------------------------------------------------------------------------------
+        //Label tartalmának módosítása
+        private void ChangeLabel(bool sidebe, byte choseny, byte chosenx)
+        {
+            //Melyik oldalnak kell a jelét odarakni
+            if (sidebe)
+            {
+                labels[choseny, chosenx].Content = "X";
+                labels[choseny, chosenx].Foreground = Brushes.Red;
+            }//if
+            else
+            {
+                labels[choseny, chosenx].Content = "O";
+                labels[choseny, chosenx].Foreground = Brushes.Blue;
+            }//if
+        }
+
+        //HANDLEREK
         //-----------------------------------------------------------------------------------------
         //Ha az ablak mérete változott
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -187,32 +301,50 @@ namespace TicTacToe
             byte chosenx;
             byte choseny;
 
-            //Melyik oldal jön
-            if (side)
-            {
-                be.Content = "X";
-                be.Foreground = Brushes.Red;
-            }//if
-            else
-            {
-                be.Content = "O";
-                be.Foreground = Brushes.Blue;
-            }//if
             //Egy ideiglenes string változó
             string stemp = be.Name.Replace('K', ' ');
             //Meghatározzuk az indexét a kiválasztott elemnek az adatbázisban
             chosenx = Convert.ToByte(stemp.Split('S')[1]);
             choseny = Convert.ToByte(stemp.Split('S')[0]);
+
+            //A label frissítése
+            ChangeLabel(side, choseny, chosenx);
+
             //A game classban is változtatjuk a cellák értékét (Hogy később majd ne keljen mindig kiolvasni a labelekből)
             game.Change(choseny, chosenx, side);
             //Felcseréljük azt, hogy ki jön
-            side = !side;
+            if (!AIcontrolled)
+                side = !side;
             //Leteszteljük, hogy valaki nyert-e
             if (game.over)
             {
                 Finish();
-                MessageBox.Show((game.Winner ? "X" : "O") + " Wins");
+                //  MessageBox.Show((game.Winner ? "X" : "O") + " Wins");
                 over = true;
+                return;
+            }//if
+            //Ha az AI is játszik
+            if (AIcontrolled)
+            {
+                //Van-e még szabad hely
+                if (game.Counter == 0)
+                {
+                    return;
+                }
+                //A lépés kiszámítása
+                byte[] temp = ai.next().Result;
+                //lépés maga
+                game.Change(temp[0], temp[1], aiside);
+                //A label frissítése
+                ChangeLabel(aiside, temp[0], temp[1]);
+            }
+            //Leteszteljük, hogy valaki nyert-e
+            if (game.over)
+            {
+                Finish();
+                //  MessageBox.Show((game.Winner ? "X" : "O") + " Wins");
+                over = true;
+                return;
             }//if
         }
 
@@ -270,7 +402,7 @@ namespace TicTacToe
             {
                 Checksize = Convert.ToByte(menu.checksizetbox.Text);
             }//else
-            //Az x és y tengely tesztelése
+             //Az x és y tengely tesztelése
             if (menu.xtengelytbox.Text == "")
             {
                 if (menu.ytengelytbox.Text == "")
@@ -301,22 +433,14 @@ namespace TicTacToe
                 y = Convert.ToByte(menu.ytengelytbox.Text);
             }//else
 
+            //Az AI legyen-e
+            AIcontrolled = (bool)menu.AIcheck.IsChecked;
+
             //Elrejtjük a menüt
             menu.Hide();
 
             //Újra megcsináljuk az ablak felépítését
             SetupWindow();
-
-            //Az AI megcsinálása, ha igényli a felhasználó
-            if ((bool)menu.AIcheck.IsChecked)
-            {
-                AIcontrolled = true;
-                ai = new AI(game);
-            }//if
-            else
-            {
-                AIcontrolled = false;
-            }//else
 
             //A méretek frissítése
             AdjustSize();
@@ -327,60 +451,6 @@ namespace TicTacToe
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             menu.Close();
-        }
-
-        //-----------------------------------------------------------------------------------------
-        //SetupWindow
-        private void SetupWindow()
-        {
-            //Resetel mindent, ha a menüből indult ez egyébként pedig ezek az alap értékek
-            inprogress = false;
-            setupped = false;
-            side = true;
-            over = false;
-            //Reseteli az ablakot
-            Field.Children.Clear();
-            Field.ColumnDefinitions.Clear();
-            Field.RowDefinitions.Clear();
-
-            //A megfelelő számú RowDefinition hozzáadása
-            for (int i = 0; i < y; i++)
-            {
-                Field.RowDefinitions.Add(new RowDefinition());
-            }
-            //A megfelelő számú ColumnDefinition hozzáadása
-            for (int i = 0; i < x; i++)
-            {
-                Field.ColumnDefinitions.Add(new ColumnDefinition());
-            }
-            //Labelek írásának mérete
-            int size = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85) == 0 ? 150 : Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85);
-            //Labelek megcsinálása (később lehet képek lesznek)
-            labels = new Label[y, x];
-            for (int i = 0; i < y; i++)
-            {
-                for (int j = 0; j < x; j++)
-                {
-                    Label label = new Label();
-                    label.MouseLeftButtonDown += Select;
-                    label.FontWeight = FontWeight.FromOpenTypeWeight(700);
-                    label.FontSize = size;
-                    label.Content = "";
-                    label.VerticalContentAlignment = VerticalAlignment.Center;
-                    label.HorizontalContentAlignment = HorizontalAlignment.Center;
-                    label.Padding = new Thickness(0, 0, 0, 0);
-                    Grid.SetColumn(label, j);
-                    Grid.SetRow(label, i);
-                    label.Name = "K" + i + "S" + j;
-                    Field.Children.Add(label);
-                    labels[i, j] = label;
-                }//for
-            }//for
-
-            //Szegélyek megcsinálása
-            MakeBorders();
-            //A játék adatbázisának megcsinálása
-            game = new PlayField(y, x, (byte)(Checksize - 1));
         }
     }
 }
