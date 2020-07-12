@@ -50,5 +50,12 @@ namespace TicTacToe
         {
             return cells[bey, bex].Type == 0;
         }
+
+        //-------------------------------------------------------------------
+        //Az indexelt cella tartalma
+        public byte GetCellType(byte[] index)
+        {
+            return cells[index[0], index[1]].Type;
+        }
     }
 }

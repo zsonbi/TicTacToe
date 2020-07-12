@@ -33,7 +33,7 @@ namespace TicTacToe
         private Menu menu = new Menu();//A menu ablak megcsinálása
         private bool inprogress;//A játék folyamatba van-e
         private bool AIcontrolled = false; //AI játszik-e
-        private AI ai;//Az ai maga
+        private AIsub ai;//Az ai maga
         private bool aiside;//Az ai melyik oldalt képviseli
         private readonly Random rnd = new Random();//Egy szimpla random
 
@@ -223,13 +223,13 @@ namespace TicTacToe
 
             if (AIcontrolled)
             {
-                InitializeAI();
+                InitializeAI().GetAwaiter();
             }//if
         }
 
         //------------------------------------------------------------
         //Az AI bevitele a rendszerbe
-        private void InitializeAI()
+        private async Task InitializeAI()
         {
             //Az AI melyik oldalt fog játszani
             if ((bool)menu.randomradiobutton.IsChecked)
@@ -245,11 +245,11 @@ namespace TicTacToe
                 side = true;
             }//else
             aiside = !side;
-            ai = new AI(game, aiside);
+            ai = new AIsub(game, aiside);
             //Ha az AI jön elsőnek
             if (aiside)
             {
-                byte[] temp = ai.next().Result;
+                byte[] temp = await ai.next();
                 game.Change(temp[0], temp[1], aiside);
                 //A label frissítése
                 ChangeLabel(aiside, temp[0], temp[1]);

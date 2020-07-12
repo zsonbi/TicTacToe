@@ -95,12 +95,12 @@ namespace TicTacToe
         //Hogy csak 3x3-as pályán lehessen szomorú ez kicsit :(
         private void AIcheck_Checked(object sender, RoutedEventArgs e)
         {
-            if (!(Convert.ToByte(xtengelytbox.Text) == 3 && Convert.ToByte(ytengelytbox.Text) == 3))
-            {
-                //Felhasználó értesítése, hogy miért nem lehet
-                MessageBox.Show("Még csak 3x3-as pályához támogatott");
-                AIcheck.IsChecked = false;
-            }
+            //if (!(Convert.ToByte(xtengelytbox.Text) == 3 && Convert.ToByte(ytengelytbox.Text) == 3))
+            //{
+            //    //Felhasználó értesítése, hogy miért nem lehet
+            //    MessageBox.Show("Még csak 3x3-as pályához támogatott");
+            //    AIcheck.IsChecked = false;
+            //}
         }
     }
 }
