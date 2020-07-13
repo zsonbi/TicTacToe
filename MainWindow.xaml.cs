@@ -44,7 +44,7 @@ namespace TicTacToe
         {
             InitializeComponent();
             //A játékmező megcsinálása
-            SetupWindow();
+            SetupWindow().GetAwaiter();
             menu.Donebtn.Click += Done_Click;
         }
 
@@ -133,7 +133,7 @@ namespace TicTacToe
 
         //--------------------------------------------------------------------------------------
         //A játék resetelése
-        private void Reset()
+        private async Task Reset()
         {
             game = new PlayField(y, x, (byte)(Checksize - 1));
             over = false;
@@ -147,7 +147,7 @@ namespace TicTacToe
             //Ha AI van
             if (AIcontrolled)
             {
-                InitializeAI().GetAwaiter();
+                await InitializeAI();
             }
             else
                 side = true;
@@ -172,7 +172,7 @@ namespace TicTacToe
 
         //-----------------------------------------------------------------------------------------
         //Ez csinálja meg az egész játékteret és állítja be a változókat
-        private void SetupWindow()
+        private async Task SetupWindow()
         {
             //Resetel mindent, ha a menüből indult ez egyébként pedig ezek az alap értékek
             inprogress = false;
@@ -225,7 +225,7 @@ namespace TicTacToe
 
             if (AIcontrolled)
             {
-                InitializeAI().GetAwaiter();
+                await InitializeAI();
             }//if
         }
 
@@ -492,7 +492,7 @@ namespace TicTacToe
             menu.Hide();
 
             //Újra megcsináljuk az ablak felépítését
-            SetupWindow();
+            SetupWindow().GetAwaiter();
 
             //A méretek frissítése
             AdjustSize();
