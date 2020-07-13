@@ -36,6 +36,7 @@ namespace TicTacToe
         private AIsub ai;//Az ai maga
         private bool aiside;//Az ai melyik oldalt képviseli
         private readonly Random rnd = new Random();//Egy szimpla random
+        private bool onlyAIPlays = false;
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
@@ -145,7 +146,7 @@ namespace TicTacToe
             //Ha AI van
             if (AIcontrolled)
             {
-                InitializeAI();
+                InitializeAI().GetAwaiter();
             }
             else
                 side = true;
@@ -254,6 +255,50 @@ namespace TicTacToe
                 //A label frissítése
                 ChangeLabel(aiside, temp[0], temp[1]);
             }//if
+            //Ha egymás ellen akarjuk az AI-okat ereszteni
+            if (onlyAIPlays)
+            {
+                AIPlaysAgainstItself();
+            }
+        }
+
+        //---------------------------------------------------------
+        //Csinál mégegy AI-t ami ellen fog játszani
+        private async void AIPlaysAgainstItself()
+        {
+            AIsub otherAI = new AIsub(game, !aiside);
+            while (!game.over)
+            {
+                //Melyik oldal AI-a lépjen
+                if (side == ai.Side)
+                {
+                    //Kiszámoljuk a legoptimálisabb lépést
+                    byte[] temp = await ai.next();
+                    game.Change(temp[0], temp[1], aiside);
+                    //A label frissítése
+                    ChangeLabel(aiside, temp[0], temp[1]);
+                }//if
+                else
+                {
+                    //Kiszámoljuk a legoptimálisabb lépést
+                    byte[] temp = await otherAI.next();
+                    game.Change(temp[0], temp[1], !aiside);
+                    //A label frissítése
+                    ChangeLabel(!aiside, temp[0], temp[1]);
+                }//else
+                //Lássa a felhasználó a változásokat
+                await Task.Delay(300);
+                //Felcseréljük az oldalakat
+                side = !side;
+
+                //Van-e még szabad hely
+                if (game.Counter == 0)
+                {
+                    return;
+                }
+            }
+            //Ha lett győztes akkor átszinezzük az elemeket amivel győztünk
+            Finish();
         }
 
         //----------------------------------------------------------------------------------
@@ -288,7 +333,7 @@ namespace TicTacToe
             //Hogy a játék már folyamatban van
             inprogress = true;
             //Ha vége van a játéknak ne lehessen bele matatni
-            if (over)
+            if (over || onlyAIPlays)
             {
                 return;
             }//if
@@ -434,7 +479,10 @@ namespace TicTacToe
             }//else
 
             //Az AI legyen-e
-            AIcontrolled = (bool)menu.AIcheck.IsChecked;
+            //A vagy jel után azért kell, hogy ne fussunk bele olyan helyzetbe, hogy csak 1 AI van meg amikor egymás ellen akarjuk uszítani őket
+            AIcontrolled = (bool)menu.AIcheck.IsChecked || (bool)menu.OnlyAIPlaysCheckBox.IsChecked;
+
+            onlyAIPlays = (bool)menu.OnlyAIPlaysCheckBox.IsChecked;
 
             //Elrejtjük a menüt
             menu.Hide();

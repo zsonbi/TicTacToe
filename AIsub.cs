@@ -20,6 +20,9 @@ namespace TicTacToe
         private List<sbyte[]> Patterns = new List<sbyte[]>();
         private float[][] Policies;
         private Dictionary<string, float[]> stateToScore;
+        private byte searchdepth = 3;
+
+        public bool Side { get => side; }
 
         //Properties
 
