@@ -11,7 +11,7 @@ namespace TicTacToe
     /// Minimax algoritmus alapján készült https://en.wikipedia.org/wiki/Minimax, de nem működik nagyobb pályán mint 3x3 mivel túl sok számítást kell végeznie
     /// az algoritmus alapja, hogy megnézzük az összes lehetséges lépést és kiválasztjuk számunkra a legjobbat röviden ennyi
     /// </summary>
-    internal class AI
+    internal class MiniMaxAI
     {
         //Varriables
 
@@ -25,7 +25,7 @@ namespace TicTacToe
 
         //--------------------------------------------------------------------------------
         //Konstruktor
-        public AI(PlayField be, bool aiside)
+        public MiniMaxAI(PlayField be, bool aiside)
         {
             this.x = be.X;
             this.y = be.Y;

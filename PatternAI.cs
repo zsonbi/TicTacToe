@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TicTacToe
 {
-    internal class AIsub
+    internal class PatternAI
     {
         //Varriables
 
@@ -26,7 +26,7 @@ namespace TicTacToe
 
         //--------------------------------------------------------------------------------
         //Konstruktor
-        public AIsub(PlayField be, bool aiside)
+        public PatternAI(PlayField be, bool aiside)
         {
             this.x = be.X;
             this.y = be.Y;

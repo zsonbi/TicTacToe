@@ -47,7 +47,6 @@ namespace TicTacToe
             //Ne legyen túl nagy figyelmeztetjük a felhasználót
             if (Convert.ToByte(be.Text) > 5)
             {
-                MessageBox.Show("5-nél többet nem ajánlok, de ám legyen");
                 be.Background = Brushes.Yellow;
             }//if
             //Ne adjunk meg hülyeséget
@@ -95,12 +94,6 @@ namespace TicTacToe
         //Hogy csak 3x3-as pályán lehessen szomorú ez kicsit :(
         private void AIcheck_Checked(object sender, RoutedEventArgs e)
         {
-            //if (!(Convert.ToByte(xtengelytbox.Text) == 3 && Convert.ToByte(ytengelytbox.Text) == 3))
-            //{
-            //    //Felhasználó értesítése, hogy miért nem lehet
-            //    MessageBox.Show("Még csak 3x3-as pályához támogatott");
-            //    AIcheck.IsChecked = false;
-            //}
         }
     }
 }

@@ -33,7 +33,7 @@ namespace TicTacToe
         private Menu menu = new Menu();//A menu ablak megcsinálása
         private bool inprogress;//A játék folyamatba van-e
         private bool AIcontrolled = false; //AI játszik-e
-        private AIsub ai;//Az ai maga
+        private PatternAI ai;//Az ai maga
         private bool aiside;//Az ai melyik oldalt képviseli
         private readonly Random rnd = new Random();//Egy szimpla random
         private bool onlyAIPlays = false;
@@ -247,7 +247,7 @@ namespace TicTacToe
                 side = true;
             }//else
             aiside = !side;
-            ai = new AIsub(game, aiside);
+            ai = new PatternAI(game, aiside);
             //Ha az AI jön elsőnek
             if (aiside)
             {
@@ -268,7 +268,7 @@ namespace TicTacToe
         //Itt valami nyagyon nagy baj van
         private async Task AIPlaysAgainstItself()
         {
-            AIsub otherAI = new AIsub(game, !aiside);
+            PatternAI otherAI = new PatternAI(game, !aiside);
             do
             {
                 //Van-e még szabad hely
