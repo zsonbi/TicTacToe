@@ -45,6 +45,7 @@ namespace TicTacToe
             InitializeComponent();
             //A játékmező megcsinálása
             SetupWindow();
+            menu.Donebtn.Click += Done_Click;
         }
 
         //--------------------------------------------------------------------------------------------
@@ -130,7 +131,7 @@ namespace TicTacToe
             }//else
         }
 
-        //---------------------------------------------------------------------------
+        //--------------------------------------------------------------------------------------
         //A játék resetelése
         private void Reset()
         {
@@ -228,7 +229,7 @@ namespace TicTacToe
             }//if
         }
 
-        //------------------------------------------------------------
+        //-----------------------------------------------------------------------------
         //Az AI bevitele a rendszerbe
         private async Task InitializeAI()
         {
@@ -258,17 +259,24 @@ namespace TicTacToe
             //Ha egymás ellen akarjuk az AI-okat ereszteni
             if (onlyAIPlays)
             {
-                AIPlaysAgainstItself();
+                await AIPlaysAgainstItself();
             }
         }
 
-        //---------------------------------------------------------
+        //--------------------------------------------------------------------------
         //Csinál mégegy AI-t ami ellen fog játszani
-        private async void AIPlaysAgainstItself()
+        //Itt valami nyagyon nagy baj van
+        private async Task AIPlaysAgainstItself()
         {
             AIsub otherAI = new AIsub(game, !aiside);
-            while (!game.over)
+            do
             {
+                //Van-e még szabad hely
+                if (game.Counter == 0)
+                {
+                    return;
+                }
+
                 //Melyik oldal AI-a lépjen
                 if (side == ai.Side)
                 {
@@ -286,17 +294,13 @@ namespace TicTacToe
                     //A label frissítése
                     ChangeLabel(!aiside, temp[0], temp[1]);
                 }//else
-                //Lássa a felhasználó a változásokat
-                await Task.Delay(300);
+
                 //Felcseréljük az oldalakat
                 side = !side;
 
-                //Van-e még szabad hely
-                if (game.Counter == 0)
-                {
-                    return;
-                }
-            }
+                //Lássa a felhasználó a változásokat
+                await Task.Delay(30);
+            } while (!game.over);
             //Ha lett győztes akkor átszinezzük az elemeket amivel győztünk
             Finish();
         }
@@ -417,7 +421,7 @@ namespace TicTacToe
 
                     case Key.M:
                         menu.Show();
-                        menu.Donebtn.Click += Done_Click;
+
                         break;
 
                     default:

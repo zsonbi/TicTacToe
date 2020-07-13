@@ -20,11 +20,9 @@ namespace TicTacToe
         private List<sbyte[]> Patterns = new List<sbyte[]>();
         private float[][] Policies;
         private Dictionary<string, float[]> stateToScore;
-        private byte searchdepth = 3;
-
-        public bool Side { get => side; }
 
         //Properties
+        public bool Side { get => side; }
 
         //--------------------------------------------------------------------------------
         //Konstruktor
@@ -467,6 +465,7 @@ namespace TicTacToe
 
         //-----------------------------------------------------------------------------------
         //A kilyelölt indextől képest csinálunk egy felére csökkenő sorozatot balra és jobbra is (a tömb mérete a checksize+1)
+        //Az Index 1. eleme az a Pattern indexe a 2. pedig a kiválasztott elemé
         //A kimenet ilyesmi lesz (Index{0,1}) {5,10,5,2.5,1.25}
         private float[] CalculateScore(bool side, int[] Index)
         {
@@ -480,7 +479,7 @@ namespace TicTacToe
                 basevalue /= 2;
             }
             basevalue = 10f;
-            for (int i = Index[1]; i < checkSize; i++)
+            for (int i = Index[1]; i < checkSize + 1; i++)
             {
                 if (Patterns[Index[0]][i] == 0)
                     ki[i] = side == this.side ? basevalue : basevalue / 2;

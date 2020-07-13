@@ -25,6 +25,10 @@ namespace TicTacToe
         //Az állapot változtatása
         public void Change(byte ycord, byte xcord, bool state)
         {
+            //Ha nem lenne üres a cella
+            if (!IsCellEmpty(ycord, xcord))
+                return;
+
             cells[ycord, xcord].Change(state);
             counter--;
         }
