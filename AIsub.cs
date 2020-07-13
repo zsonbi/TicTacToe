@@ -60,7 +60,7 @@ namespace TicTacToe
         //A következő lépés
         public async Task<byte[]> next()
         {
-            return FindbiggestIndex(Createimportance().Result());
+            return FindbiggestIndex(await Createimportance());
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
@@ -449,7 +449,7 @@ namespace TicTacToe
         }
 
         //---------------------------------------------------------------------------------------
-        //Csak kiírjuk a paraméterként adott Listának a tartalmát
+        //Csak kiírjuk a paraméterként adott Listának a tartalmát a konzolra
         private static void WriteOutArray(float[][] be)
         {
             foreach (var item in be)
@@ -463,6 +463,8 @@ namespace TicTacToe
         }
 
         //-----------------------------------------------------------------------------------
+        //A kilyelölt indextől képest csinálunk egy felére csökkenő sorozatot balra és jobbra is (a tömb mérete a checksize+1)
+        //A kimenet ilyesmi lesz (Index{0,1}) {5,10,5,2.5,1.25}
         private float[] CalculateScore(bool side, int[] Index)
         {
             float[] ki = new float[checkSize + 1];
