@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -9,10 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace TicTacToe
 {
@@ -37,12 +35,20 @@ namespace TicTacToe
         private bool aiside;//Az ai melyik oldalt képviseli
         private readonly Random rnd = new Random();//Egy szimpla random
         private bool onlyAIPlays = false;
+        private bool calculating = false;
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
         public MainWindow()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Missing: Gifs/hourglass.gif", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
             //A játékmező megcsinálása
             SetupWindow().GetAwaiter();
             menu.Donebtn.Click += Done_Click;
@@ -64,7 +70,7 @@ namespace TicTacToe
                     {
                         Border keret;
                         keret = new Border();
-                        keret.BorderBrush = Brushes.Black;
+                        keret.BorderBrush = System.Windows.Media.Brushes.Black;
                         Grid.SetRow(keret, i);
                         Grid.SetColumn(keret, j);
                         Field.Children.Add(keret);
@@ -99,7 +105,7 @@ namespace TicTacToe
                 {
                     while (tempx >= game.End[1])
                     {
-                        labels[tempy, tempx].Foreground = Brushes.Yellow;
+                        labels[tempy, tempx].Foreground = System.Windows.Media.Brushes.Yellow;
                         tempx--;
                         tempy++;
                     }//while
@@ -108,7 +114,7 @@ namespace TicTacToe
                 {
                     while (tempx <= game.End[1])
                     {
-                        labels[tempy, tempx].Foreground = Brushes.Yellow;
+                        labels[tempy, tempx].Foreground = System.Windows.Media.Brushes.Yellow;
                         tempx++;
                         tempy++;
                     }//while
@@ -120,12 +126,12 @@ namespace TicTacToe
                 byte tempy = game.Start[0];
                 while (tempx <= game.End[1])
                 {
-                    labels[game.Start[0], tempx].Foreground = Brushes.Yellow;
+                    labels[game.Start[0], tempx].Foreground = System.Windows.Media.Brushes.Yellow;
                     tempx++;
                 }//while
                 while (tempy <= game.End[0])
                 {
-                    labels[tempy, game.Start[1]].Foreground = Brushes.Yellow;
+                    labels[tempy, game.Start[1]].Foreground = System.Windows.Media.Brushes.Yellow;
                     tempy++;
                 }//while
             }//else
@@ -257,10 +263,18 @@ namespace TicTacToe
             //Ha az AI jön elsőnek
             if (aiside)
             {
-                byte[] temp = await ai.next();
+                //Hogy miközben éppen számolja az optimális lépést a felhasználó biztosra ne tudjon belematatni
+                calculating = true;
+                HourglassGif.Visibility = Visibility.Visible;
+                //A lépés kiszámítása
+                byte[] temp = await Task.Run(() => ai.next());
+                //A lépés maga
                 game.Change(temp[0], temp[1], aiside);
                 //A label frissítése
                 ChangeLabel(aiside, temp[0], temp[1]);
+                //Amikor az AI befejezte a dolgait
+                calculating = false;
+                HourglassGif.Visibility = Visibility.Hidden;
             }//if
             //Ha egymás ellen akarjuk az AI-okat ereszteni
             if (onlyAIPlays)
@@ -293,7 +307,7 @@ namespace TicTacToe
                 if (side == ai.Side)
                 {
                     //Kiszámoljuk a legoptimálisabb lépést
-                    byte[] temp = await ai.next();
+                    byte[] temp = await Task.Run(() => ai.next());
                     game.Change(temp[0], temp[1], aiside);
                     //A label frissítése
                     ChangeLabel(aiside, temp[0], temp[1]);
@@ -301,7 +315,8 @@ namespace TicTacToe
                 else
                 {
                     //Kiszámoljuk a legoptimálisabb lépést
-                    byte[] temp = await otherAI.next();
+                    byte[] temp = await Task.Run(() => ai.next());
+                    //lépés maga
                     game.Change(temp[0], temp[1], !aiside);
                     //A label frissítése
                     ChangeLabel(!aiside, temp[0], temp[1]);
@@ -325,12 +340,12 @@ namespace TicTacToe
             if (sidebe)
             {
                 labels[choseny, chosenx].Content = "X";
-                labels[choseny, chosenx].Foreground = Brushes.Red;
+                labels[choseny, chosenx].Foreground = System.Windows.Media.Brushes.Red;
             }//if
             else
             {
                 labels[choseny, chosenx].Content = "O";
-                labels[choseny, chosenx].Foreground = Brushes.Blue;
+                labels[choseny, chosenx].Foreground = System.Windows.Media.Brushes.Blue; ;
             }//if
         }
 
@@ -344,12 +359,12 @@ namespace TicTacToe
 
         //------------------------------------------------------------------------------------------------
         //A kiválasztás
-        private void Select(object sender, MouseButtonEventArgs e)
+        private async void Select(object sender, MouseButtonEventArgs e)
         {
             //Hogy a játék már folyamatban van
             inprogress = true;
             //Ha vége van a játéknak ne lehessen bele matatni
-            if (over || onlyAIPlays)
+            if (over || onlyAIPlays || calculating)
             {
                 return;
             }//if
@@ -392,12 +407,18 @@ namespace TicTacToe
                 {
                     return;
                 }
+                //Hogy miközben éppen számolja az optimális lépést a felhasználó biztosra ne tudjon belematatni
+                calculating = true;
+                HourglassGif.Visibility = Visibility.Visible;
                 //A lépés kiszámítása
-                byte[] temp = ai.next().Result;
+                byte[] temp = await Task.Run(() => ai.next());
                 //lépés maga
                 game.Change(temp[0], temp[1], aiside);
                 //A label frissítése
                 ChangeLabel(aiside, temp[0], temp[1]);
+                //Amikor az AI befejezte a dolgait
+                calculating = false;
+                HourglassGif.Visibility = Visibility.Hidden;
             }
             //Leteszteljük, hogy valaki nyert-e
             if (game.over)
