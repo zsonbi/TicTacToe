@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:local="clr-namespace:TicTacToe"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:properties="clr-namespace:TicTacToe.Properties"
         mc:Ignorable="d"
         Closing="Window_Closing"
@@ -16,8 +16,8 @@
         </Grid.RowDefinitions>
 
         <!--LoadingGif-->
-        <Image Grid.ZIndex="1" gif:ImageBehavior.AnimatedSource="Gifs/hourglass.gif"
-                 Visibility="Visible" MinWidth="30px" MaxWidth="100px" MaxHeight="100px"
+        <Image Grid.ZIndex="1"
+                 Visibility="Hidden" MinWidth="30px" MaxWidth="100px" MaxHeight="100px"
                  MinHeight="30px" Name="HourglassGif" />
 
         <!--ToolTip-->

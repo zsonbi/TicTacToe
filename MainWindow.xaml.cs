@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,7 +9,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using WpfAnimatedGif;
 
 namespace TicTacToe
 {
@@ -41,16 +42,14 @@ namespace TicTacToe
         //MainWindow inicializálása
         public MainWindow()
         {
-            try
-            {
-                InitializeComponent();
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Missing: Gifs/hourglass.gif", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            InitializeComponent();
+
+            //A Loading gif betöltése
+            ImageBehavior.SetAnimatedSource(HourglassGif, new BitmapImage(new Uri(@"Gifs/hourglass.gif", UriKind.Relative)));
+
             //A játékmező megcsinálása
             SetupWindow().GetAwaiter();
+            //A menu Done gombjához hozzárendeljük a handlert
             menu.Donebtn.Click += Done_Click;
         }
 
@@ -60,7 +59,7 @@ namespace TicTacToe
         {
             int width = Convert.ToInt32(Field.ActualWidth / Field.ColumnDefinitions.Count / 20);//A grid egy cellájának a szélességének a 20%-a
             int height = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count / 20);//A grid egy cellájának a Magasságának a 20%-a
-            //Ha még nem lett megcsinálva
+                                                                                               //Ha még nem lett megcsinálva
             if (!setupped)
             {
                 szegelyek = new Border[y, x];
@@ -150,7 +149,7 @@ namespace TicTacToe
                     labels[i, j].Content = "";
                 }//for
             }//for
-            //Ha AI van
+             //Ha AI van
             if (AIcontrolled)
             {
                 await InitializeAI();
@@ -276,7 +275,7 @@ namespace TicTacToe
                 calculating = false;
                 HourglassGif.Visibility = Visibility.Hidden;
             }//if
-            //Ha egymás ellen akarjuk az AI-okat ereszteni
+             //Ha egymás ellen akarjuk az AI-okat ereszteni
             if (onlyAIPlays)
             {
                 await AIPlaysAgainstItself();
@@ -399,7 +398,7 @@ namespace TicTacToe
                 over = true;
                 return;
             }//if
-            //Ha az AI is játszik
+             //Ha az AI is játszik
             if (AIcontrolled)
             {
                 //Van-e még szabad hely
