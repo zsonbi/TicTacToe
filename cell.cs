@@ -9,7 +9,7 @@ namespace TicTacToe
     internal class cell
     {
         //Varriables
-        private byte type;
+        private byte type; //1-es az 'X' 2-es az 'O'
 
         //-----------------------------------------------------------------------
         //Properties
@@ -17,9 +17,17 @@ namespace TicTacToe
 
         //------------------------------------------------------------------------
         //Konstruktor
+        //A basic
         public cell()
         {
             type = 0;
+        }
+
+        //Konstruktor
+        //Ha másolni szeretnénk
+        public cell(byte type)
+        {
+            this.type = type;
         }
 
         //------------------------------------------------------------------------
