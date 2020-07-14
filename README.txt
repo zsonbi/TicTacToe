@@ -1,1 +1,1 @@
-Hogy az .exe fusson mellette kell, hogy legyen a "WpfAnimatedGif.dll"
+For The .exe to run it needs to be next to the "WpfAnimatedGif.dll"
