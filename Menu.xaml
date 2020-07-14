@@ -11,10 +11,11 @@
             <RowDefinition Height="0.11*" />
             <RowDefinition Height="0.11*" />
             <RowDefinition Height="0.18*" />
-            <RowDefinition Height="0.07*" />
+            <RowDefinition Height="0.09*" />
             <RowDefinition Height="0.11*" />
             <RowDefinition Height="0.11*" />
-            <RowDefinition Height="0.88*" />
+            <RowDefinition Height="0.16*" />
+            <RowDefinition Height="0.7*" />
             <RowDefinition Height="0.1*" />
         </Grid.RowDefinitions>
 
@@ -41,7 +42,7 @@
         <TextBox x:Name="checksizetbox" Grid.Column="1" Grid.Row="2"  PreviewTextInput="OnlyNumber" LostFocus="checksizetbox_LostFocus" />
 
         <!--AI legyen-e-->
-        <CheckBox Grid.Row="3" Grid.ColumnSpan="2" Content="Legyen-e AI a másik player?" Name="AIcheck"  Checked="AIcheck_Checked" />
+        <CheckBox Grid.Row="3" Grid.ColumnSpan="2" Content="Legyen-e AI a másik player?" Name="AIcheck" />
 
         <!--AI melyik oldalt játszon-->
         <WrapPanel Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Center">
@@ -54,7 +55,13 @@
         <!--Csak az AI játszon-e-->
         <CheckBox Grid.Row="5" Grid.ColumnSpan="2" Content="Legyen-e 2 db AI ami egymás ellen játszon-e" Name="OnlyAIPlaysCheckBox" VerticalAlignment="Center" />
 
+        <!--Melyik fajta AI legyen használva-->
+        <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
+            <RadioButton GroupName="AIType" Content="Minta alapján működő AI" IsChecked="True" Name="PatternAIRadiobtn"></RadioButton>
+            <RadioButton GroupName="AIType" Content="MiniMax Algoritmus alapján működő AI (Csak a 3x3-asnál támogatott)" Name="MiniMaxAIRadiobtn" Click="MiniMaxAIRadiobtn_Click"></RadioButton>
+        </StackPanel>
+
         <!--Done gomb-->
-        <Button Grid.Row="7" Grid.ColumnSpan="2" Content="Done" Name="Donebtn"></Button>
+        <Button Grid.Row="8" Grid.ColumnSpan="2" Content="Done" Name="Donebtn"></Button>
     </Grid>
 </Window>

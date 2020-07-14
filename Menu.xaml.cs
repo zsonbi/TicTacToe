@@ -91,9 +91,13 @@ namespace TicTacToe
         }
 
         //----------------------------------------------------------------------------------
-        //Hogy csak 3x3-as pályán lehessen szomorú ez kicsit :(
-        private void AIcheck_Checked(object sender, RoutedEventArgs e)
+        //Figyelmeztessük a felhasználót, hogy meg akarja ölni a gépét
+        private void MiniMaxAIRadiobtn_Click(object sender, RoutedEventArgs e)
         {
+            if ((xtengelytbox.Text != "" && Convert.ToInt32(xtengelytbox.Text) > 3) || (ytengelytbox.Text != "" && Convert.ToInt32(ytengelytbox.Text) > 3))
+            {
+                MessageBox.Show("3x3-nál szerintem nem akarod nagyobbra a géped meg fog halni sok számítás kell az 3^(x*y) kombináció kiszámolásához");
+            }
         }
     }
 }
