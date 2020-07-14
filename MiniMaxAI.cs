@@ -11,7 +11,7 @@ namespace TicTacToe
     /// Minimax algoritmus alapján készült https://en.wikipedia.org/wiki/Minimax, de nem működik nagyobb pályán mint 3x3 mivel túl sok számítást kell végeznie
     /// az algoritmus alapja, hogy megnézzük az összes lehetséges lépést és kiválasztjuk számunkra a legjobbat röviden ennyi
     /// </summary>
-    internal class MiniMaxAI
+    internal class MiniMaxAI : IAI
     {
         //Varriables
 
@@ -19,9 +19,9 @@ namespace TicTacToe
         private List<PlayField> nextState; //Ez fog változni ez egy ideiglenes változó/pálya
         private byte x;//A játéktér mérete x tengelyen
         private byte y;//A játéktér mérete y tengelyen
-        private bool side;//Az ai X vagy O
 
         //Properties
+        public bool Side { get; private set; }
 
         //--------------------------------------------------------------------------------
         //Konstruktor
@@ -30,7 +30,7 @@ namespace TicTacToe
             this.x = be.X;
             this.y = be.Y;
             this.current = be;
-            this.side = aiside;
+            this.Side = aiside;
             //Megcsináljuk a listát
             nextState = new List<PlayField>();
         }
@@ -58,7 +58,7 @@ namespace TicTacToe
                         continue;
                     }//if
                     //Megcsináljuk a feltételezett lépést a másolt pályánkon
-                    nextState[0].Change(i, j, side);
+                    nextState[0].Change(i, j, Side);
                     //Ha egyből győznénk azzal a lépéssel
                     if (nextState[0].over)
                     {
@@ -66,7 +66,7 @@ namespace TicTacToe
                     }//if
                     //Meghívjuk a rekurzív függvényt ami az összes többi lépésen ami még jönni fog végigmegy(rekurzívan) és vissza ad egy sbyte-ot ami -1 = ha az ellenfél győzött
                     //0 ha döntetlen  és 1 ha győzött
-                    minmax[i, j] = await Recursion(1, !side);
+                    minmax[i, j] = await Recursion(1, !Side);
                 }//for
             }//for
             //A legjobb scoreal rendelkező lépést adjuk vissza
@@ -102,17 +102,17 @@ namespace TicTacToe
                     if (nextState[deepness].over)
                     {
                         //Megnézzük melyik oldal győzött
-                        if (nextState[deepness].Winner == side)
+                        if (nextState[deepness].Winner == Side)
                         {
                             //Ha annak az oldalnak ez a feltételezett legjobb lépése visszaadjuk az értéket
-                            if (whichside == side)
+                            if (whichside == Side)
                                 return 1;
                             minmax[i, j] = 1;
                         }//if
                         else
                         {
                             //Ha annak az oldalnak ez a feltételezett legjobb lépése visszaadjuk az értéket
-                            if (whichside == !side)
+                            if (whichside == !Side)
                                 return -1;
                             minmax[i, j] = -1;
                         }//else
@@ -129,7 +129,7 @@ namespace TicTacToe
                 }
             }
             //Visszaadjuk az aktuális oldalnak a legjobb lépésének értékét
-            return whichside == side ? Findbiggest(minmax) : FindSmallest(minmax);
+            return whichside == Side ? Findbiggest(minmax) : FindSmallest(minmax);
         }
 
         //--------------------------------------------------------------------------------

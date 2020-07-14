@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TicTacToe
 {
-    internal class PatternAI
+    internal class PatternAI : IAI
     {
         //Varriables
 
@@ -15,14 +15,13 @@ namespace TicTacToe
         private List<PlayField> nextState; //Ez fog változni ez egy ideiglenes változó/pálya
         private byte x;//A játéktér mérete x tengelyen
         private byte y;//A játéktér mérete y tengelyen
-        private bool side;//Az ai X vagy O
         private byte checkSize;
         private List<sbyte[]> Patterns = new List<sbyte[]>();
         private float[][] Policies;
         private Dictionary<string, float[]> stateToScore;
 
         //Properties
-        public bool Side { get => side; }
+        public bool Side { get; private set; }
 
         //--------------------------------------------------------------------------------
         //Konstruktor
@@ -31,7 +30,7 @@ namespace TicTacToe
             this.x = be.X;
             this.y = be.Y;
             this.current = be;
-            this.side = aiside;
+            this.Side = aiside;
             //Megcsináljuk a listát
             nextState = new List<PlayField>();
             this.checkSize = current.Checksize;
@@ -325,11 +324,11 @@ namespace TicTacToe
 
                 if (Patterns[i].Count(x => x == 1) == checkSize)
                 {
-                    tempPolicy[Patterns[i].ToList().FindIndex(x => x == 0)] += side ? 1000f : 750f;
+                    tempPolicy[Patterns[i].ToList().FindIndex(x => x == 0)] += Side ? 1000f : 750f;
                 }//if
                 else if (Patterns[i].Count(x => x == 2) == checkSize)
                 {
-                    tempPolicy[Patterns[i].ToList().FindIndex(x => x == 0)] += side ? 750f : 1000f;
+                    tempPolicy[Patterns[i].ToList().FindIndex(x => x == 0)] += Side ? 750f : 1000f;
                 }//else if
                 else if (Patterns[i].Count(x => x == 0) == checkSize + 1)
                 {
@@ -342,7 +341,7 @@ namespace TicTacToe
                         float[] tempArray;
                         if (Patterns[i][j] == 1)
                         {
-                            tempArray = CalculateScore(this.side ? true : false, new int[] { i, j });
+                            tempArray = CalculateScore(this.Side ? true : false, new int[] { i, j });
                             for (int k = 0; k <= checkSize; k++)
                             {
                                 tempPolicy[k] += tempArray[k];
@@ -350,7 +349,7 @@ namespace TicTacToe
                         }//if
                         else if (Patterns[i][j] == 2)
                         {
-                            tempArray = CalculateScore(this.side ? false : true, new int[] { i, j });
+                            tempArray = CalculateScore(this.Side ? false : true, new int[] { i, j });
                             for (int k = 0; k <= checkSize; k++)
                             {
                                 tempPolicy[k] += tempArray[k];
@@ -474,7 +473,7 @@ namespace TicTacToe
             for (int i = Index[1]; i >= 0; i--)
             {
                 if (Patterns[Index[0]][i] == 0)
-                    ki[i] = side == this.side ? basevalue : basevalue / 2;
+                    ki[i] = side == this.Side ? basevalue : basevalue / 2;
 
                 basevalue /= 2;
             }
@@ -482,7 +481,7 @@ namespace TicTacToe
             for (int i = Index[1]; i < checkSize + 1; i++)
             {
                 if (Patterns[Index[0]][i] == 0)
-                    ki[i] = side == this.side ? basevalue : basevalue / 2;
+                    ki[i] = side == this.Side ? basevalue : basevalue / 2;
 
                 basevalue /= 2;
             }
