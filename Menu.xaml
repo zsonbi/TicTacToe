@@ -58,7 +58,7 @@
         <!--Melyik fajta AI legyen használva-->
         <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
             <RadioButton GroupName="AIType" Content="Minta alapján működő AI" IsChecked="True" Name="PatternAIRadiobtn"></RadioButton>
-            <RadioButton GroupName="AIType" Content="MiniMax Algoritmus alapján működő AI (Csak a 3x3-asnál támogatott)" Name="MiniMaxAIRadiobtn" Click="MiniMaxAIRadiobtn_Click"></RadioButton>
+            <RadioButton GroupName="AIType" Content="MiniMax Algoritmus alapján működő AI (Csak a 3x3-asnál támogatott)" Name="MiniMaxAIRadiobtn" Checked="MiniMaxAIRadiobtn_Checked"></RadioButton>
         </StackPanel>
 
         <!--Done gomb-->
