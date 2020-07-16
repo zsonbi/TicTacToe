@@ -26,11 +26,11 @@
 
         <!--X tengely-->
         <Label Content="X tengelyen a szélessége:" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" />
-        <TextBox x:Name="xtengelytbox" Grid.Column="1" Grid.Row="0" PreviewTextInput="OnlyNumber" LostFocus="tengelyek_LostFocus" />
+        <TextBox x:Name="xtengelytbox" Grid.Column="1" Grid.Row="0" PreviewTextInput="OnlyNumber" LostFocus="tengelyek_LostFocus" Text="3" />
 
         <!--Y tengely-->
         <Label Content="Y tengelyen a szélessége:" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" />
-        <TextBox x:Name="ytengelytbox" Grid.Column="1" Grid.Row="1"  PreviewTextInput="OnlyNumber" LostFocus="tengelyek_LostFocus" />
+        <TextBox x:Name="ytengelytbox" Grid.Column="1" Grid.Row="1"  PreviewTextInput="OnlyNumber" LostFocus="tengelyek_LostFocus" Text="3" />
 
         <!--Checksize-->
         <Label  Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right">
@@ -39,7 +39,7 @@
                 kigyülnie a győzelelemhez:
             </TextBlock>
         </Label>
-        <TextBox x:Name="checksizetbox" Grid.Column="1" Grid.Row="2"  PreviewTextInput="OnlyNumber" LostFocus="checksizetbox_LostFocus" />
+        <TextBox x:Name="checksizetbox" Grid.Column="1" Grid.Row="2"  PreviewTextInput="OnlyNumber" LostFocus="checksizetbox_LostFocus" Text="3" />
 
         <!--AI legyen-e-->
         <CheckBox Grid.Row="3" Grid.ColumnSpan="2" Content="Legyen-e AI a másik player?" Name="AIcheck" />
