@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace TicTacToe
@@ -12,16 +11,14 @@ namespace TicTacToe
         //Varriables
 
         private readonly PlayField current; //Jelenlegi pálya állapot
-        private List<PlayField> nextState; //Ez fog változni ez egy ideiglenes változó/pálya
-        private byte x;//A játéktér mérete x tengelyen
-        private byte y;//A játéktér mérete y tengelyen
-        private byte checkSize;
-        private List<sbyte[]> Patterns = new List<sbyte[]>();
-        private float[][] Policies;
-        private Dictionary<string, float[]> stateToScore;
+        private readonly byte x;//A játéktér mérete x tengelyen
+        private readonly byte y;//A játéktér mérete y tengelyen
+        private readonly byte checkSize; //Mennyinek kell kigyülnie a győzelemhez
+        private List<sbyte[]> Patterns = new List<sbyte[]>(); //A minták
+        private Dictionary<string, float[]> stateToScore; //Az adott mintához mennyi pont jár
 
         //Properties
-        public bool Side { get; private set; }
+        public bool Side { get; private set; } //Az AI melyik oldalt játszik
 
         //--------------------------------------------------------------------------------
         //Konstruktor
@@ -31,8 +28,6 @@ namespace TicTacToe
             this.y = be.Y;
             this.current = be;
             this.Side = aiside;
-            //Megcsináljuk a listát
-            nextState = new List<PlayField>();
             this.checkSize = current.Checksize;
             Setup();
         }
@@ -42,8 +37,9 @@ namespace TicTacToe
         private void Setup()
         {
             MakePatterns();
-            MakePolicies();
+
             stateToScore = new Dictionary<string, float[]>();
+            float[][] Policies = MakePolicies();
             for (int i = 0; i < Patterns.Count; i++)
             {
                 string temp = "";
@@ -51,7 +47,6 @@ namespace TicTacToe
                 {
                     temp += item;
                 }
-
                 stateToScore.Add(temp, Policies[i]);
             }
         }
@@ -84,12 +79,12 @@ namespace TicTacToe
                     {
                         temp += current.GetCellType(new byte[] { i, (byte)(j + k) });
                     }//for
-                    //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
+                     //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
                     if (!stateToScore.ContainsKey(temp))
                     {
                         continue;
                     }//if
-                    //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
+                     //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
                     for (int k = 0; k <= checkSize; k++)
                     {
                         importance[i, j + k] += stateToScore[temp][k];
@@ -108,12 +103,12 @@ namespace TicTacToe
                     {
                         temp += current.GetCellType(new byte[] { (byte)(j + k), i });
                     }//for
-                    //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
+                     //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
                     if (!stateToScore.ContainsKey(temp))
                     {
                         continue;
                     }//if
-                    //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
+                     //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
                     for (int k = 0; k <= checkSize; k++)
                     {
                         importance[j + k, i] += stateToScore[temp][k];
@@ -133,14 +128,14 @@ namespace TicTacToe
                     {
                         temp += current.GetCellType(new byte[] { (byte)(ycord + k), (byte)(xcord + k) });
                     }//for
-                    //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
+                     //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
                     if (!stateToScore.ContainsKey(temp))
                     {
                         xcord++;
                         ycord++;
                         continue;
                     }//if
-                    //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
+                     //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
                     for (int k = 0; k <= checkSize; k++)
                     {
                         importance[ycord + k, xcord + k] += stateToScore[temp][k];
@@ -164,14 +159,14 @@ namespace TicTacToe
                     {
                         temp += current.GetCellType(new byte[] { (byte)(ycord + k), (byte)(xcord + k) });
                     }//for
-                    //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
+                     //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
                     if (!stateToScore.ContainsKey(temp))
                     {
                         xcord++;
                         ycord++;
                         continue;
                     }//if
-                    //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
+                     //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
                     for (int k = 0; k <= checkSize; k++)
                     {
                         importance[ycord + k, xcord + k] += stateToScore[temp][k];
@@ -195,14 +190,14 @@ namespace TicTacToe
                     {
                         temp += current.GetCellType(new byte[] { (byte)(ycord + k), (byte)(xcord - k) });
                     }//for
-                    //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
+                     //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
                     if (!stateToScore.ContainsKey(temp))
                     {
                         xcord--;
                         ycord++;
                         continue;
                     }//if
-                    //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
+                     //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
                     for (int k = 0; k <= checkSize; k++)
                     {
                         importance[ycord + k, xcord - k] += stateToScore[temp][k];
@@ -225,14 +220,14 @@ namespace TicTacToe
                     {
                         temp += current.GetCellType(new byte[] { (byte)(ycord + k), (byte)(xcord - k) });
                     }//for
-                    //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
+                     //Ha nem tartalmaz olyan kulcsot (Ez amiatt történhet meg mert kiszedtem azokat a mintákat amik csak 1-est és 2-est tartalmaztak)
                     if (!stateToScore.ContainsKey(temp))
                     {
                         xcord--;
                         ycord++;
                         continue;
                     }//if
-                    //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
+                     //Az importancehez hozzáadjuk a mintához tartozó Policy értékét
                     for (int k = 0; k <= checkSize; k++)
                     {
                         importance[ycord + k, xcord - k] += stateToScore[temp][k];
@@ -270,7 +265,7 @@ namespace TicTacToe
         }
 
         //--------------------------------------------------------------------------------
-        //Megkeresi a legnagyobb értéket a tömbben
+        //Megkeresi a legnagyobb értéket a tömbben //Not Used
         private sbyte Findbiggest(sbyte[,] be)
         {
             sbyte biggest = sbyte.MinValue;
@@ -289,7 +284,7 @@ namespace TicTacToe
         }
 
         //--------------------------------------------------------------------------------
-        //Megkeresi a legnagyobb értéket a tömbben
+        //Megkeresi a legnagyobb értéket a tömbben //Not Used
         private sbyte FindSmallest(sbyte[,] be)
         {
             sbyte smallest = sbyte.MaxValue;
@@ -311,12 +306,13 @@ namespace TicTacToe
 
         //--------------------------------------------------------------------
         //Megcsinálja a policyket
-        private void MakePolicies()
+        private float[][] MakePolicies()
         {
+            float[][] Policies;
             //A mérete
             int NumberOfPolicies = Patterns.Count;
             Policies = new float[NumberOfPolicies][];
-            float[] basic = Makebasic((byte)(checkSize + 1));
+            float[] basic = CreateFunction(false, new int[] { 0, 2 });
 
             for (int i = 0; i < NumberOfPolicies; i++)
             {
@@ -341,7 +337,8 @@ namespace TicTacToe
                         float[] tempArray;
                         if (Patterns[i][j] == 1)
                         {
-                            tempArray = CalculateScore(this.Side ? true : false, new int[] { i, j });
+                            tempArray = CreateFunction(this.Side ? true : false, new int[] { i, j });
+                            // tempArray = CalculateScore(this.Side ? true : false, new int[] { i, j });
                             for (int k = 0; k <= checkSize; k++)
                             {
                                 tempPolicy[k] += tempArray[k];
@@ -349,7 +346,8 @@ namespace TicTacToe
                         }//if
                         else if (Patterns[i][j] == 2)
                         {
-                            tempArray = CalculateScore(this.Side ? false : true, new int[] { i, j });
+                            tempArray = CreateFunction(this.Side ? false : true, new int[] { i, j });
+                            //  tempArray = CalculateScore(this.Side ? false : true, new int[] { i, j });
                             for (int k = 0; k <= checkSize; k++)
                             {
                                 tempPolicy[k] += tempArray[k];
@@ -357,8 +355,18 @@ namespace TicTacToe
                         }//else
                     }//for
                 }//else
+
+                //Szimplán, ha egy jó lépés megduplázzuk a pontját
+                if (Patterns[i].Distinct().ToList().Count() == 2 && Patterns[i].Count(x => x == 1 || x == 2) == checkSize - 2)
+                {
+                    for (int k = 0; k <= checkSize; k++)
+                    {
+                        //Ez lehet overkill majd még tesztelgetem
+                        tempPolicy[k] *= 2;
+                    }
+                }
                 //Ha betudja rakni insta win szituációba
-                if (Patterns[i].Distinct().ToList().Count() == 2 && Patterns[i].Count(x => x == 1 || x == 2) == checkSize - 1)
+                else if (Patterns[i].Distinct().ToList().Count() == 2 && Patterns[i].Count(x => x == 1 || x == 2) == checkSize)
                 {
                     for (int k = 0; k <= checkSize; k++)
                     {
@@ -366,47 +374,37 @@ namespace TicTacToe
                         tempPolicy[k] *= 20;
                     }
                 }
+                //Ha ezze a lépéssel a köv. körben nyerhet
+                else if (Patterns[i].Distinct().ToList().Count() == 2 && Patterns[i].Count(x => x == 1 || x == 2) == checkSize - 1)
+                {
+                    for (int k = 0; k <= checkSize; k++)
+                    {
+                        //Ez lehet overkill majd még tesztelgetem
+                        tempPolicy[k] *= 10;
+                    }
+                }
+
                 Policies[i] = tempPolicy;
             }
+            return Policies;
         }
 
         //--------------------------------------------------------------------------
-        //Megcsinálja az alap mintát pl így kéne inéznie egy 5-ös méretűnél {5,10,20,10,5}
-        //Erre a methodra nagyon nem vagyok büszke olyan szinten csúnya lett pls kill me
-        //Ez ahoz kell, ha egy csak üres mintához érünk ez lesz az értéke
-        private float[] Makebasic(byte size)
+        //Ez fogja megcsinálni a függvényt f(x) = 10/2^|i-index[1]|
+        //A kimenet ilyesmi lesz (Index{0,1}) {5,10,5,2.5,1.25}
+        private float[] CreateFunction(bool side, int[] index)
         {
-            List<float> output = new List<float>();
+            float[] output = new float[checkSize + 1];
 
-            //Egy ideiglenes listát csinálunk ami 2 felé fogja osztani a kimenetet
-            float[][] temp = new float[2][];
-            for (byte i = 0; i < 2; i++)
+            for (int i = 0; i <= checkSize; i++)
             {
-                float[] temparray = new float[size / 2 + (size % 2 == 0 ? 0 : i)];
-                temp[i] = temparray;
-            }//for
-
-            //Ha páros akkor 20-as értéket kap egyébként pedig 10-est
-            float basic = size % 2 == 0 ? 2f : 1f;
-            //Végigmegyünk az első felén
-            for (sbyte i = (sbyte)(temp[0].Length - 1); i >= 0; i--)
-            {
-                temp[0][i] = basic;
-                basic /= 2;
-            }//for
-            //Resetelük az értékét
-            basic = 2f;
-            //Végigmegyünk a 2. felén
-            for (byte i = 0; i < temp[1].Length; i++)
-            {
-                temp[1][i] = basic;
-                basic /= 2;
-            }//for
-            //Hozzáadjuk a 2 ideiglenes listát a kimeneti listához
-            output.AddRange(temp[0]);
-            output.AddRange(temp[1]);
-
-            return output.ToArray();
+                if (Patterns[index[0]][i] == 0)
+                {
+                    //Ha az ellenfélé az elem akkor csak fele annyi pontot kap a melette levő helyekre
+                    output[i] = 10 / (float)Math.Pow(2, Math.Abs(i - index[1]));
+                }
+            }
+            return output;
         }
 
         //----------------------------------------------------------------
@@ -449,7 +447,7 @@ namespace TicTacToe
         }
 
         //---------------------------------------------------------------------------------------
-        //Csak kiírjuk a paraméterként adott Listának a tartalmát a konzolra
+        //Csak kiírjuk a paraméterként adott Listának a tartalmát a konzolra //Debugra fenntartva
         private static void WriteOutArray(float[][] be)
         {
             foreach (var item in be)
@@ -460,32 +458,6 @@ namespace TicTacToe
                 }//forea
                 Console.WriteLine();
             }//forea
-        }
-
-        //-----------------------------------------------------------------------------------
-        //A kilyelölt indextől képest csinálunk egy felére csökkenő sorozatot balra és jobbra is (a tömb mérete a checksize+1)
-        //Az Index 1. eleme az a Pattern indexe a 2. pedig a kiválasztott elemé
-        //A kimenet ilyesmi lesz (Index{0,1}) {5,10,5,2.5,1.25}
-        private float[] CalculateScore(bool side, int[] Index)
-        {
-            float[] ki = new float[checkSize + 1];
-            float basevalue = 10f;
-            for (int i = Index[1]; i >= 0; i--)
-            {
-                if (Patterns[Index[0]][i] == 0)
-                    ki[i] = side == this.Side ? basevalue : basevalue / 2;
-
-                basevalue /= 2;
-            }
-            basevalue = 10f;
-            for (int i = Index[1]; i < checkSize + 1; i++)
-            {
-                if (Patterns[Index[0]][i] == 0)
-                    ki[i] = side == this.Side ? basevalue : basevalue / 2;
-
-                basevalue /= 2;
-            }
-            return ki;
         }
     }
 }

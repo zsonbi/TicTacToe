@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using WpfAnimatedGif;
 
@@ -35,8 +28,8 @@ namespace TicTacToe
         private IAI ai;//Az ai maga
         private bool aiside;//Az ai melyik oldalt képviseli
         private readonly Random rnd = new Random();//Egy szimpla random
-        private bool onlyAIPlays = false;
-        private bool calculating = false;
+        private bool onlyAIPlays = false;//Csak a 2 AI játszik
+        private bool calculating = false;//Ezzel mutatjuk, hogy a gif meddig jelenjen meg
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
