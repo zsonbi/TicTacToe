@@ -1,1 +1,1 @@
-For The .exe to run it needs to be next to the "WpfAnimatedGif.dll"
+ To run the .exe it needs to be next to the "WpfAnimatedGif.dll"

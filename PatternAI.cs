@@ -13,15 +13,14 @@ namespace TicTacToe
         //Varriables
 
         private readonly PlayField current; //Jelenlegi pálya állapot
-        private List<PlayField> nextState; //Ez fog változni ez egy ideiglenes változó/pálya
         private byte x;//A játéktér mérete x tengelyen
         private byte y;//A játéktér mérete y tengelyen
-        private byte checkSize;
-        private List<sbyte[]> Patterns = new List<sbyte[]>();
-        private Dictionary<string, float[]> stateToScore;
+        private byte checkSize; //Mennyinek kell kigyülnie a győzelemhez
+        private List<sbyte[]> Patterns = new List<sbyte[]>(); //A minták
+        private Dictionary<string, float[]> stateToScore; //Az adott mintához mennyi pont jár
 
         //Properties
-        public bool Side { get; private set; }
+        public bool Side { get; private set; } //Az AI melyik oldalt játszik
 
         //--------------------------------------------------------------------------------
         //Konstruktor
@@ -31,8 +30,6 @@ namespace TicTacToe
             this.y = be.Y;
             this.current = be;
             this.Side = aiside;
-            //Megcsináljuk a listát
-            nextState = new List<PlayField>();
             this.checkSize = current.Checksize;
             Setup();
         }
