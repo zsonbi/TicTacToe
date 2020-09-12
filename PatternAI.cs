@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace TicTacToe
@@ -13,9 +11,9 @@ namespace TicTacToe
         //Varriables
 
         private readonly PlayField current; //Jelenlegi pálya állapot
-        private byte x;//A játéktér mérete x tengelyen
-        private byte y;//A játéktér mérete y tengelyen
-        private byte checkSize; //Mennyinek kell kigyülnie a győzelemhez
+        private readonly byte x;//A játéktér mérete x tengelyen
+        private readonly byte y;//A játéktér mérete y tengelyen
+        private readonly byte checkSize; //Mennyinek kell kigyülnie a győzelemhez
         private List<sbyte[]> Patterns = new List<sbyte[]>(); //A minták
         private Dictionary<string, float[]> stateToScore; //Az adott mintához mennyi pont jár
 

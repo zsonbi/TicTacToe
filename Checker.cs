@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
-
-namespace TicTacToe
+﻿namespace TicTacToe
 {
     internal class Checker
     {
@@ -15,9 +8,9 @@ namespace TicTacToe
 
         //Varriables
 
-        private byte x;//A játéktér mérete x tengelyen
-        private byte y;//A játéktér mérete y tengelyen
-        private byte checksize;//Mennyinek kell kigyülnie a győzelemhe
+        private readonly byte x;//A játéktér mérete x tengelyen
+        private readonly byte y;//A játéktér mérete y tengelyen
+        private readonly byte checksize;//Mennyinek kell kigyülnie a győzelemhe
         private bool winner;//Ki győzött (true X : false O)
         private byte counter = 0;//Számláló, hogy hány ugyanolyan van egymás után
         private byte currentType = 0;//A jelenlegi sorozatban levő tipus
