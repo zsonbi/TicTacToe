@@ -28,7 +28,7 @@ namespace TicTacToe
         private readonly Random rnd = new Random();//Egy szimpla random
         private bool onlyAIPlays = false;//Csak a 2 AI játszik
         private bool calculating = false;//Ezzel mutatjuk, hogy a gif meddig jelenjen meg
-        private ameba ameba = new ameba();
+        private ameba ameba;
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
@@ -158,7 +158,7 @@ namespace TicTacToe
         //A játék resetelése
         private async Task Reset()
         {
-            ameba = new ameba(x, y);
+            ameba = new ameba(x, y, Checksize);
             over = false;
             for (int i = 0; i < y; i++)
             {
@@ -351,6 +351,8 @@ namespace TicTacToe
 
             //A méretek frissítése
             AdjustSize();
+
+            Reset();
         }
 
         //----------------------------------------------------------------------------------------

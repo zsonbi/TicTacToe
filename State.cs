@@ -80,7 +80,7 @@ namespace TicTacToe
                 {
                     isOver = true;
                     WhoWon = 1 == selected;
-                    for (byte c = (byte)(x - indexer); c <= i; c++)
+                    for (byte c = (byte)(y - indexer); c <= i; c++)
                     {
                         winnerCells.Add(new byte[] { c, x });
                     }//for
