@@ -176,6 +176,15 @@ namespace TicTacToe
             side = true;
         }
 
+        //-----------------------------------------------------------------------------
+        private void Finish()
+        {
+            foreach (var item in ameba.winnerCells)
+            {
+                labels[item[0], item[1]].Foreground = System.Windows.Media.Brushes.Yellow;
+            }
+        }
+
         //----------------------------------------------------------------------------------
         //Label tartalmának módosítása
         private void ChangeLabel(bool sidebe, byte choseny, byte chosenx)
@@ -208,7 +217,7 @@ namespace TicTacToe
             //Hogy a játék már folyamatban van
             inprogress = true;
             //Ha vége van a játéknak ne lehessen bele matatni
-            if (over || onlyAIPlays || calculating)
+            if (ameba.isOver || onlyAIPlays || calculating)
             {
                 return;
             }//if
@@ -232,6 +241,12 @@ namespace TicTacToe
 
             //A game classban is változtatjuk a cellák értékét (Hogy később majd ne keljen mindig kiolvasni a labelekből)
             ameba.Change(choseny, chosenx);
+
+            if (ameba.isOver)
+            {
+                Finish();
+            }
+
             //Felcseréljük azt, hogy ki jön
             if (!AIcontrolled)
                 side = !side;

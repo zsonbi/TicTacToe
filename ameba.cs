@@ -16,6 +16,7 @@ namespace TicTacToe
 
         public bool isOver { get => gameState.isOver; }
         public bool whoWon { get => gameState.WhoWon; }
+        public byte[][] winnerCells { get => gameState.WinnerCells.ToArray(); }
 
         //Static Properties
 
@@ -40,6 +41,7 @@ namespace TicTacToe
         public void Change(byte y, byte x)
         {
             gameState.Change(y, x);
+            Side = !Side;
         }
     }
 }

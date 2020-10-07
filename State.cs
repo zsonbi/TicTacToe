@@ -9,6 +9,7 @@ namespace TicTacToe
     internal class State
     {
         private byte[,] board = new byte[ameba.Y, ameba.X];
+        private List<byte[]> winnerCells = new List<byte[]>();
 
         //******************************************************************
         //Properties
@@ -16,7 +17,8 @@ namespace TicTacToe
         public bool isOver { get; private set; }
 
         public bool WhoWon { get; private set; }
-        public List<byte[]> winnerCells { get; private set; }
+
+        public List<byte[]> WinnerCells { get => winnerCells; }
 
         //*******************************************************************
         //Private Methods
