@@ -8,7 +8,7 @@ namespace TicTacToe
 {
     internal class State
     {
-        private byte[,] board = new byte[TicTacToe.Y, TicTacToe.X];
+        private byte[,] board = new byte[ameba.Y, ameba.X];
 
         //******************************************************************
         //Properties
@@ -24,21 +24,23 @@ namespace TicTacToe
         private void HorizontalCheck(byte y, byte x)
         {
             byte selected = board[y, x];
-            byte indexer = 0;
-            for (byte i = (byte)(x - 1); i >= 0; i--)
+            sbyte indexer = -1;
+            sbyte counter = 0;
+            for (sbyte i = (sbyte)(x); i >= 0; i--)
             {
                 if (board[y, i] == selected)
                 {
                     indexer++;
                 }//if
             }//for
-            for (byte i = (byte)(x - indexer); i < TicTacToe.X; i++)
+            for (byte i = (byte)(x - indexer); i < ameba.X; i++)
             {
                 if (board[y, i] != selected)
                 {
                     break;
                 }//if
-                if (i - indexer == TicTacToe.Checksize)
+                counter++;
+                if (counter == ameba.Checksize)
                 {
                     isOver = true;
                     WhoWon = 1 == selected;
@@ -56,21 +58,23 @@ namespace TicTacToe
         private void VerticalCheck(byte y, byte x)
         {
             byte selected = board[y, x];
-            byte indexer = 0;
-            for (byte i = (byte)(y - 1); i >= 0; i--)
+            sbyte indexer = -1;
+            sbyte counter = 0;
+            for (sbyte i = (sbyte)(y); i >= 0; i--)
             {
                 if (board[i, x] == selected)
                 {
                     indexer++;
                 }//if
             }//for
-            for (byte i = (byte)(y - indexer); i < TicTacToe.Y; i++)
+            for (byte i = (byte)(y - indexer); i < ameba.Y; i++)
             {
                 if (board[i, x] != selected)
                 {
                     break;
                 }//if
-                if (i - indexer == TicTacToe.Checksize)
+                counter++;
+                if (counter == ameba.Checksize)
                 {
                     isOver = true;
                     WhoWon = 1 == selected;
@@ -92,7 +96,7 @@ namespace TicTacToe
                 throw new Exception("The cell is already occupied");
             }
 
-            board[y, x] = TicTacToe.Side ? (byte)1 : (byte)2;
+            board[y, x] = ameba.Side ? (byte)1 : (byte)2;
             HorizontalCheck(y, x);
             VerticalCheck(y, x);
         }

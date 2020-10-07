@@ -6,10 +6,16 @@ using System.Threading.Tasks;
 
 namespace TicTacToe
 {
-    internal class TicTacToe
+    internal class ameba
     {
         //Varriables
         private State gameState;
+
+        //**********************************************************
+        //Properties
+
+        public bool isOver { get => gameState.isOver; }
+        public bool whoWon { get => gameState.WhoWon; }
 
         //Static Properties
 
@@ -19,7 +25,7 @@ namespace TicTacToe
         public static bool Side { get; private set; }//the current playing side true 'X' false 'O'
 
         //Constructor
-        public TicTacToe(byte x = 3, byte y = 3, byte checksize = 3)
+        public ameba(byte x = 3, byte y = 3, byte checksize = 3)
         {
             X = x;
             Y = y;

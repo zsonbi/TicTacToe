@@ -28,7 +28,7 @@ namespace TicTacToe
         private readonly Random rnd = new Random();//Egy szimpla random
         private bool onlyAIPlays = false;//Csak a 2 AI játszik
         private bool calculating = false;//Ezzel mutatjuk, hogy a gif meddig jelenjen meg
-        private TicTacToe tictactoe;
+        private ameba ameba = new ameba();
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
@@ -154,6 +154,28 @@ namespace TicTacToe
             // game = new PlayField(y, x, (byte)(Checksize - 1));
         }
 
+        //--------------------------------------------------------------------------------------
+        //A játék resetelése
+        private async Task Reset()
+        {
+            ameba = new ameba(x, y);
+            over = false;
+            for (int i = 0; i < y; i++)
+            {
+                for (int j = 0; j < x; j++)
+                {
+                    labels[i, j].Content = "";
+                }//for
+            }//for
+            /*   //Ha AI van
+              if (AIcontrolled)
+              {
+                  await InitializeAI();
+              }
+              else*/
+            side = true;
+        }
+
         //----------------------------------------------------------------------------------
         //Label tartalmának módosítása
         private void ChangeLabel(bool sidebe, byte choseny, byte chosenx)
@@ -209,7 +231,7 @@ namespace TicTacToe
             ChangeLabel(side, choseny, chosenx);
 
             //A game classban is változtatjuk a cellák értékét (Hogy később majd ne keljen mindig kiolvasni a labelekből)
-            //   game.Change(choseny, chosenx, side);
+            ameba.Change(choseny, chosenx);
             //Felcseréljük azt, hogy ki jön
             if (!AIcontrolled)
                 side = !side;
@@ -234,7 +256,7 @@ namespace TicTacToe
                                 return;
                             }//if
                         }
-                        //     Reset();
+                        Reset();
                         break;
 
                     case Key.M:
