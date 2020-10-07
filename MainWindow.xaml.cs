@@ -19,17 +19,16 @@ namespace TicTacToe
         private bool side;//Melyik oldal jön
         private Border[,] szegelyek;//A szegelyeket letároljuk, hogy amikor méretet frissítünk tudjuk majd frissíteni
         private Label[,] labels;//A labeleket letároljuk, hogy amikor méretet frissítünk tudjuk majd frissíteni
-        private PlayField game;//Játéknak az adatbázisa
         private byte Checksize = 3;//Alapértelmezetten mennyinek kell kigyülnie a győzelemhez (3)
         private bool over;//Valaki nyert-e már
         private Menu menu = new Menu();//A menu ablak megcsinálása
         private bool inprogress;//A játék folyamatba van-e
         private bool AIcontrolled = false; //AI játszik-e
-        private IAI ai;//Az ai maga
         private bool aiside;//Az ai melyik oldalt képviseli
         private readonly Random rnd = new Random();//Egy szimpla random
         private bool onlyAIPlays = false;//Csak a 2 AI játszik
         private bool calculating = false;//Ezzel mutatjuk, hogy a gif meddig jelenjen meg
+        private TicTacToe tictactoe;
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
@@ -82,73 +81,6 @@ namespace TicTacToe
                     szegelyek[i, j].BorderThickness = new Thickness(width, height, width, height);
                 }//for
             }//for
-        }
-
-        //-----------------------------------------------------------------------------------------
-        //Ha valaki győzött kiemeli sárgával azokat amikkel győzött
-        private void Finish()
-        {
-            //Hogyan győzött srégen vagy egy vonalban
-            if (game.Wintype)
-            {
-                sbyte tempx = (sbyte)game.Start[1];
-                sbyte tempy = (sbyte)game.Start[0];
-                if (tempx > game.End[1])
-                {
-                    while (tempx >= game.End[1])
-                    {
-                        labels[tempy, tempx].Foreground = System.Windows.Media.Brushes.Yellow;
-                        tempx--;
-                        tempy++;
-                    }//while
-                }//if
-                else
-                {
-                    while (tempx <= game.End[1])
-                    {
-                        labels[tempy, tempx].Foreground = System.Windows.Media.Brushes.Yellow;
-                        tempx++;
-                        tempy++;
-                    }//while
-                }//else
-            }//if
-            else
-            {
-                byte tempx = game.Start[1];
-                byte tempy = game.Start[0];
-                while (tempx <= game.End[1])
-                {
-                    labels[game.Start[0], tempx].Foreground = System.Windows.Media.Brushes.Yellow;
-                    tempx++;
-                }//while
-                while (tempy <= game.End[0])
-                {
-                    labels[tempy, game.Start[1]].Foreground = System.Windows.Media.Brushes.Yellow;
-                    tempy++;
-                }//while
-            }//else
-        }
-
-        //--------------------------------------------------------------------------------------
-        //A játék resetelése
-        private async Task Reset()
-        {
-            game = new PlayField(y, x, (byte)(Checksize - 1));
-            over = false;
-            for (int i = 0; i < y; i++)
-            {
-                for (int j = 0; j < x; j++)
-                {
-                    labels[i, j].Content = "";
-                }//for
-            }//for
-             //Ha AI van
-            if (AIcontrolled)
-            {
-                await InitializeAI();
-            }
-            else
-                side = true;
         }
 
         //--------------------------------------------------------------------------------
@@ -219,109 +151,7 @@ namespace TicTacToe
             //Szegélyek megcsinálása
             MakeBorders();
             //A játék adatbázisának megcsinálása
-            game = new PlayField(y, x, (byte)(Checksize - 1));
-
-            if (AIcontrolled)
-            {
-                await InitializeAI();
-            }//if
-        }
-
-        //-----------------------------------------------------------------------------
-        //Az AI bevitele a rendszerbe
-        private async Task InitializeAI()
-        {
-            //Az AI melyik oldalt fog játszani
-            if ((bool)menu.randomradiobutton.IsChecked)
-            {
-                side = rnd.Next(0, 2) == 0;
-            }//if
-            else if ((bool)menu.Xradiobutton.IsChecked)
-            {
-                side = false;
-            }//else if
-            else
-            {
-                side = true;
-            }//else
-            aiside = !side;
-
-            //Melyik AIfajta legyen
-            if ((bool)menu.PatternAIRadiobtn.IsChecked)
-                ai = new PatternAI(game, aiside);
-            else
-                ai = new MiniMaxAI(game, aiside);
-
-            //Ha az AI jön elsőnek
-            if (aiside)
-            {
-                //Hogy miközben éppen számolja az optimális lépést a felhasználó biztosra ne tudjon belematatni
-                calculating = true;
-                HourglassGif.Visibility = Visibility.Visible;
-                //A lépés kiszámítása
-                byte[] temp = await Task.Run(() => ai.next());
-                //A lépés maga
-                game.Change(temp[0], temp[1], aiside);
-                //A label frissítése
-                ChangeLabel(aiside, temp[0], temp[1]);
-                //Amikor az AI befejezte a dolgait
-                calculating = false;
-                HourglassGif.Visibility = Visibility.Hidden;
-            }//if
-             //Ha egymás ellen akarjuk az AI-okat ereszteni
-            if (onlyAIPlays)
-            {
-                await AIPlaysAgainstItself();
-            }
-        }
-
-        //--------------------------------------------------------------------------
-        //Csinál mégegy AI-t ami ellen fog játszani
-        //Itt valami nyagyon nagy baj van
-        private async Task AIPlaysAgainstItself()
-        {
-            IAI otherAI;
-            //Melyik AIfajta legyen az AI ellenfele
-            if ((bool)menu.PatternAIRadiobtn.IsChecked)
-                otherAI = new PatternAI(game, !aiside);
-            else
-                otherAI = new MiniMaxAI(game, !aiside);
-
-            do
-            {
-                //Van-e még szabad hely
-                if (game.Counter == 0)
-                {
-                    return;
-                }
-
-                //Melyik oldal AI-a lépjen
-                if (side == ai.Side)
-                {
-                    //Kiszámoljuk a legoptimálisabb lépést
-                    byte[] temp = await Task.Run(() => ai.next());
-                    game.Change(temp[0], temp[1], aiside);
-                    //A label frissítése
-                    ChangeLabel(aiside, temp[0], temp[1]);
-                }//if
-                else
-                {
-                    //Kiszámoljuk a legoptimálisabb lépést
-                    byte[] temp = await Task.Run(() => ai.next());
-                    //lépés maga
-                    game.Change(temp[0], temp[1], !aiside);
-                    //A label frissítése
-                    ChangeLabel(!aiside, temp[0], temp[1]);
-                }//else
-
-                //Felcseréljük az oldalakat
-                side = !side;
-
-                //Lássa a felhasználó a változásokat
-                await Task.Delay(30);
-            } while (!game.over);
-            //Ha lett győztes akkor átszinezzük az elemeket amivel győztünk
-            Finish();
+            // game = new PlayField(y, x, (byte)(Checksize - 1));
         }
 
         //----------------------------------------------------------------------------------
@@ -379,47 +209,10 @@ namespace TicTacToe
             ChangeLabel(side, choseny, chosenx);
 
             //A game classban is változtatjuk a cellák értékét (Hogy később majd ne keljen mindig kiolvasni a labelekből)
-            game.Change(choseny, chosenx, side);
+            //   game.Change(choseny, chosenx, side);
             //Felcseréljük azt, hogy ki jön
             if (!AIcontrolled)
                 side = !side;
-            //Leteszteljük, hogy valaki nyert-e
-            if (game.over)
-            {
-                Finish();
-                //  MessageBox.Show((game.Winner ? "X" : "O") + " Wins");
-                over = true;
-                return;
-            }//if
-             //Ha az AI is játszik
-            if (AIcontrolled)
-            {
-                //Van-e még szabad hely
-                if (game.Counter == 0)
-                {
-                    return;
-                }
-                //Hogy miközben éppen számolja az optimális lépést a felhasználó biztosra ne tudjon belematatni
-                calculating = true;
-                HourglassGif.Visibility = Visibility.Visible;
-                //A lépés kiszámítása
-                byte[] temp = await Task.Run(() => ai.next());
-                //lépés maga
-                game.Change(temp[0], temp[1], aiside);
-                //A label frissítése
-                ChangeLabel(aiside, temp[0], temp[1]);
-                //Amikor az AI befejezte a dolgait
-                calculating = false;
-                HourglassGif.Visibility = Visibility.Hidden;
-            }
-            //Leteszteljük, hogy valaki nyert-e
-            if (game.over)
-            {
-                Finish();
-                //  MessageBox.Show((game.Winner ? "X" : "O") + " Wins");
-                over = true;
-                return;
-            }//if
         }
 
         //-----------------------------------------------------------------------
@@ -441,7 +234,7 @@ namespace TicTacToe
                                 return;
                             }//if
                         }
-                        Reset();
+                        //     Reset();
                         break;
 
                     case Key.M:
