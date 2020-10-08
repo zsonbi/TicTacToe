@@ -9,24 +9,31 @@ namespace TicTacToe
     internal class ameba
     {
         //Varriables
-        private State gameState;
 
-        private bool isAiControlled;
-        private IAI ai;
+        private State gameState; //The gameboard basicly, but it can also check if someone won
+
+        private IAI ai; //ai WOW it must be smart, no it's not
 
         //**********************************************************
         //Properties
-
+        //Returns if the game is over
         public bool isOver { get => gameState.isOver; }
-        public bool whoWon { get => gameState.WhoWon; }
+
+        //Get the cells which won the game
         public byte[][] winnerCells { get => gameState.WinnerCells.ToArray(); }
 
         //Static Properties
+        //x size of the board default 3
+        public static byte X { get; private set; }
 
-        public static byte X { get; private set; }//Alapértelmezetten x tengely méret (3)
-        public static byte Y { get; private set; }//Alapértelmezetten y tengely méret (3)
-        public static byte Checksize { get; private set; }//Alapértelmezetten mennyinek kell kigyülnie a győzelemhez (3)
-        public static bool Side { get; private set; }//the current playing side true 'X' false 'O'
+        //y size of the board default 3
+        public static byte Y { get; private set; }
+
+        //How many 'X' or 'O' do the players need to win
+        public static byte Checksize { get; private set; }
+
+        //the current playing side true 'X' false 'O'
+        public static bool Side { get; private set; }
 
         //Constructor
         public ameba(byte x = 3, byte y = 3, byte checksize = 3, bool aiControlled = false)
@@ -36,7 +43,6 @@ namespace TicTacToe
             Checksize = checksize;
             Side = true;
             gameState = new State();
-            this.isAiControlled = aiControlled;
             if (aiControlled)
             {
                 ai = new MiniMaxAI(false, gameState);
