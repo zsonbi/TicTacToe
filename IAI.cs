@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace TicTacToe
 {
-    interface IAI
+    internal interface IAI
     {
-        bool aiside { get; set; } 
+        //The side which the player plays as
+        bool aiSide { get; }
 
-        Task<byte[]> next(); 
+        //Gets the Next best move
+        Task<byte[]> Next();
     }
 }

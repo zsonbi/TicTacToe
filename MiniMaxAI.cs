@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace TicTacToe
 {
-    class MiniMaxAI
+    internal class MiniMaxAI : IAI
     {
-
         //Properties
         public bool aiSide { get; private set; }
-        State currentState;
-        List<State> previousStates= new List<State>();
 
+        private IState currentState;
+        private List<IState> previousStates = new List<IState>();
 
-        public MiniMaxAI(bool aiSide,State current)
+        public MiniMaxAI(bool aiSide, IState current)
         {
             this.aiSide = aiSide;
             this.currentState = current;
@@ -23,37 +22,52 @@ namespace TicTacToe
 
         //***************************************************************
         //Private Methods
-        private sbyte Recursion(byte y, byte x,short depth,bool Side)
+        private sbyte Recursion(short depth, bool Side)
         {
-            if(previousStates.Count == depth)
+            if (previousStates.Count == depth)
             {
                 previousStates.Add(new State());
             }
+            previousStates[depth].ImportState(previousStates[depth - 1].ExportState());
             byte[][] possActions = previousStates[depth].PossMoves();
             sbyte[] values = new sbyte[possActions.Length];
             for (int i = 0; i < possActions.Length; i++)
             {
-                values[i] = Recursion(y, x, depth, !Side);
+                previousStates[depth].ImportState(previousStates[depth - 1].ExportState());
+                previousStates[depth].Change(possActions[i][0], possActions[i][1], Side);
+                if (previousStates[depth].isOver)
+                {
+                    if (previousStates[depth].Draw)
+                        values[i] = 0;
+                    else
+                        values[i] = (sbyte)(previousStates[depth].WhoWon == aiSide ? 1 : -1);
+                    continue;
+                }
+
+                values[i] = Recursion((short)(depth + 1), !Side);
             }//for
 
-            return Side == aiSide ? FindSmallestValue(values) : FindLargestValue(values);
-
+            return Side == aiSide ? FindLargestValue(values) : FindSmallestValue(values);
         }
 
+        //-------------------------------------------------------------------
+        //Returns the index of the largest element in the array
         private short FindLargestIndex(sbyte[] input)
         {
             short LargestIndex = 0;
             for (short i = 1; i < input.Length; i++)
             {
-                if(input[LargestIndex]< input[i])
+                if (input[LargestIndex] < input[i])
                 {
                     LargestIndex = i;
-                }
-            }
+                }//if
+            }//for
             return LargestIndex;
         }
 
-        private sbyte FindSmallestValue(sbyte[] input)
+        //-------------------------------------------------------
+        //Returns the index of the smallest element in the array
+        private short FindSmallestIndex(sbyte[] input)
         {
             short SmallestIndex = 0;
             for (short i = 1; i < input.Length; i++)
@@ -61,11 +75,20 @@ namespace TicTacToe
                 if (input[SmallestIndex] > input[i])
                 {
                     SmallestIndex = i;
-                }
-            }
-            return input[SmallestIndex];
+                }//if
+            }//for
+            return SmallestIndex;
         }
 
+        //---------------------------------------------------------
+        //Returns the Smallest value from the array
+        private sbyte FindSmallestValue(sbyte[] input)
+        {
+            return input[FindSmallestIndex(input)];
+        }
+
+        //-------------------------------------------------------------
+        //Returns the biggest value from the array
         private sbyte FindLargestValue(sbyte[] input)
         {
             return input[FindLargestIndex(input)];
@@ -76,17 +99,20 @@ namespace TicTacToe
         //Determines the Next best move
         public async Task<byte[]> Next()
         {
-            byte[] output=new byte[2];
-            byte[][] possmoves = currentState.PossMoves();
-            sbyte[] score = new sbyte[possmoves.Length];
-            for (int i = 0; i < possmoves.Length; i++)
+            previousStates.Clear();
+            byte[] output = new byte[2];
+            byte[][] possActions = currentState.PossMoves();
+            sbyte[] score = new sbyte[possActions.Length];
+            previousStates.Add(new State());
+            previousStates[0].ImportState(currentState.ExportState());
+            for (int i = 0; i < possActions.Length; i++)
             {
-                score[i] = Recursion(possmoves[i][0], possmoves[i][1], 0,aiSide);
+                previousStates[0].Change(possActions[i][0], possActions[i][1], aiSide);
+                score[i] = Recursion(1, !aiSide);
+                previousStates[0].ImportState(currentState.ExportState());
             }//for
 
-
-            return possmoves[FindLargestIndex(score)];
+            return possActions[FindLargestIndex(score)];
         }
-
     }
 }

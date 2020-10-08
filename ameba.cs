@@ -10,8 +10,9 @@ namespace TicTacToe
     {
         //Varriables
         private State gameState;
+
         private bool isAiControlled;
-        MiniMaxAI ai;
+        private IAI ai;
 
         //**********************************************************
         //Properties
@@ -28,7 +29,7 @@ namespace TicTacToe
         public static bool Side { get; private set; }//the current playing side true 'X' false 'O'
 
         //Constructor
-        public ameba(byte x = 3, byte y = 3, byte checksize = 3,bool aiControlled=false)
+        public ameba(byte x = 3, byte y = 3, byte checksize = 3, bool aiControlled = false)
         {
             X = x;
             Y = y;
@@ -38,17 +39,25 @@ namespace TicTacToe
             this.isAiControlled = aiControlled;
             if (aiControlled)
             {
-                ai = new MiniMaxAI(true, gameState);
+                ai = new MiniMaxAI(false, gameState);
             }//if
         }
 
         //**************************************************************************
         //Public method
         //Changes the indexed element to the side which comes next
-        public void Change(byte y, byte x)
+        public async Task Change(byte y, byte x)
         {
-            gameState.Change(y, x);
+            gameState.Change(y, x, ameba.Side);
+
             Side = !Side;
+        }
+
+        //------------------------------------------------------------------
+        //Gets the next move of the bot
+        public async Task<byte[]> Next()
+        {
+            return await ai.Next();
         }
     }
 }

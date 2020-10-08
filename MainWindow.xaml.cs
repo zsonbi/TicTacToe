@@ -28,7 +28,7 @@ namespace TicTacToe
         private readonly Random rnd = new Random();//Egy szimpla random
         private bool onlyAIPlays = false;//Csak a 2 AI játszik
         private bool calculating = false;//Ezzel mutatjuk, hogy a gif meddig jelenjen meg
-        private ameba ameba=new ameba();
+        private ameba ameba = new ameba();
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
@@ -158,7 +158,7 @@ namespace TicTacToe
         //A játék resetelése
         private async Task Reset()
         {
-            ameba = new ameba(x, y, Checksize);
+            ameba = new ameba(x, y, Checksize, AIcontrolled);
             over = false;
             for (int i = 0; i < y; i++)
             {
@@ -240,16 +240,28 @@ namespace TicTacToe
             ChangeLabel(side, choseny, chosenx);
 
             //A game classban is változtatjuk a cellák értékét (Hogy később majd ne keljen mindig kiolvasni a labelekből)
-            ameba.Change(choseny, chosenx);
+            await ameba.Change(choseny, chosenx);
 
             if (ameba.isOver)
             {
                 Finish();
+                return;
             }
 
             //Felcseréljük azt, hogy ki jön
             if (!AIcontrolled)
                 side = !side;
+            else
+            {
+                byte[] temp = await ameba.Next();
+                await ameba.Change(temp[0], temp[1]);
+                //A label frissítése
+                ChangeLabel(!side, temp[0], temp[1]);
+            }
+            if (ameba.isOver)
+            {
+                Finish();
+            }
         }
 
         //-----------------------------------------------------------------------

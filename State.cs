@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace TicTacToe
 {
-    internal class State
+    internal class State : IState
     {
         private byte[,] board = new byte[ameba.Y, ameba.X];
         private List<byte[]> winnerCells = new List<byte[]>();
+        private short counter = (short)(ameba.X * ameba.Y);
 
         //******************************************************************
         //Properties
@@ -14,6 +15,8 @@ namespace TicTacToe
         public bool isOver { get; private set; }
 
         public bool WhoWon { get; private set; }
+
+        public bool Draw { get; private set; }
 
         public List<byte[]> WinnerCells { get => winnerCells; }
 
@@ -43,6 +46,7 @@ namespace TicTacToe
                 {
                     isOver = true;
                     WhoWon = 1 == selected;
+                    Draw = false;
                     for (byte c = (byte)(x - indexer); c <= i; c++)
                     {
                         winnerCells.Add(new byte[] { y, c });
@@ -51,8 +55,6 @@ namespace TicTacToe
                 }//if
             }//for
         }
-
-        
 
         //-------------------------------------------------------------------
         //Checks Vertically for the win
@@ -79,6 +81,7 @@ namespace TicTacToe
                 {
                     isOver = true;
                     WhoWon = 1 == selected;
+                    Draw = false;
                     for (byte c = (byte)(y - indexer); c <= i; c++)
                     {
                         winnerCells.Add(new byte[] { c, x });
@@ -119,6 +122,7 @@ namespace TicTacToe
                 {
                     isOver = true;
                     WhoWon = 1 == selected;
+                    Draw = false;
                     tempy = (sbyte)(y - indexer);
                     for (byte c = (byte)(x - indexer); c <= i; c++)
                     {
@@ -129,7 +133,6 @@ namespace TicTacToe
                 }//if
             }//for
         }
-
 
         //-------------------------------------------------------------------
         //Checks diagonally right
@@ -162,6 +165,7 @@ namespace TicTacToe
                 {
                     isOver = true;
                     WhoWon = 1 == selected;
+                    Draw = false;
                     tempy = (sbyte)(y - indexer);
                     for (sbyte c = (sbyte)(x + indexer); c >= 0; c--)
                     {
@@ -173,18 +177,24 @@ namespace TicTacToe
             }//for
         }
 
-
         //*********************************************************************
         //Public Methods
         //Changes the cell at the cordinate to the side value which comes next
-        public void Change(byte y, byte x)
+        public void Change(byte y, byte x, bool Side)
         {
             if (board[y, x] != 0)
             {
                 throw new Exception("The cell is already occupied");
             }
 
-            board[y, x] = ameba.Side ? (byte)1 : (byte)2;
+            board[y, x] = Side ? (byte)1 : (byte)2;
+            counter--;
+            if (counter == 0)
+            {
+                isOver = true;
+                Draw = true;
+            }
+
             HorizontalCheck(y, x);
             VerticalCheck(y, x);
             DiagonalLeftCheck(y, x);
@@ -208,6 +218,29 @@ namespace TicTacToe
             }//for
 
             return output.ToArray();
+        }
+
+        //------------------------------------------------------------------
+        //Import the State
+        public void ImportState(byte[,] state)
+        {
+            isOver = false;
+            Draw = false;
+            for (int i = 0; i < ameba.Y; i++)
+            {
+                for (int j = 0; j < ameba.X; j++)
+                {
+                    board[i, j] = state[i, j];
+                }
+            }
+            counter = (short)PossMoves().GetLength(0);
+        }
+
+        //------------------------------------------------------------------
+        //Exports the state
+        public byte[,] ExportState()
+        {
+            return board;
         }
     }
 }
