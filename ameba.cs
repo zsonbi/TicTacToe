@@ -10,6 +10,8 @@ namespace TicTacToe
     {
         //Varriables
         private State gameState;
+        private bool isAiControlled;
+        MiniMaxAI ai;
 
         //**********************************************************
         //Properties
@@ -26,13 +28,18 @@ namespace TicTacToe
         public static bool Side { get; private set; }//the current playing side true 'X' false 'O'
 
         //Constructor
-        public ameba(byte x = 3, byte y = 3, byte checksize = 3)
+        public ameba(byte x = 3, byte y = 3, byte checksize = 3,bool aiControlled=false)
         {
             X = x;
             Y = y;
             Checksize = checksize;
             Side = true;
             gameState = new State();
+            this.isAiControlled = aiControlled;
+            if (aiControlled)
+            {
+                ai = new MiniMaxAI(true, gameState);
+            }//if
         }
 
         //**************************************************************************

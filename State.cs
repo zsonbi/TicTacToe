@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TicTacToe
 {
@@ -55,6 +52,8 @@ namespace TicTacToe
             }//for
         }
 
+        
+
         //-------------------------------------------------------------------
         //Checks Vertically for the win
         private void VerticalCheck(byte y, byte x)
@@ -89,8 +88,95 @@ namespace TicTacToe
             }//for
         }
 
+        //-------------------------------------------------------------------
+        //Checks diagonally right
+        private void DiagonalLeftCheck(byte y, byte x)
+        {
+            byte selected = board[y, x];
+            sbyte indexer = -1;
+            sbyte counter = 0;
+            sbyte tempy = (sbyte)y;
+
+            for (sbyte i = (sbyte)(x); i >= 0 && tempy >= 0; i--)
+            {
+                if (board[tempy, i] == selected)
+                {
+                    indexer++;
+                }//if
+                tempy--;
+            }//for
+
+            tempy = (sbyte)(y - indexer);
+            for (byte i = (byte)(x - indexer); i < ameba.X && tempy < ameba.Y; i++)
+            {
+                if (board[tempy, i] != selected)
+                {
+                    break;
+                }//if
+                tempy++;
+                counter++;
+                if (counter == ameba.Checksize)
+                {
+                    isOver = true;
+                    WhoWon = 1 == selected;
+                    tempy = (sbyte)(y - indexer);
+                    for (byte c = (byte)(x - indexer); c <= i; c++)
+                    {
+                        winnerCells.Add(new byte[] { (byte)tempy, c });
+                        tempy++;
+                    }//for
+                    return;
+                }//if
+            }//for
+        }
+
+
+        //-------------------------------------------------------------------
+        //Checks diagonally right
+        private void DiagonalRightCheck(byte y, byte x)
+        {
+            byte selected = board[y, x];
+            sbyte indexer = -1;
+            sbyte counter = 0;
+            sbyte tempy = (sbyte)y;
+
+            for (sbyte i = (sbyte)(x); i < ameba.X && tempy >= 0; i++)
+            {
+                if (board[tempy, i] == selected)
+                {
+                    indexer++;
+                }//if
+                tempy--;
+            }//for
+
+            tempy = (sbyte)(y - indexer);
+            for (sbyte i = (sbyte)(x + indexer); i >= 0 && tempy < ameba.Y; i--)
+            {
+                if (board[tempy, i] != selected)
+                {
+                    break;
+                }//if
+                tempy++;
+                counter++;
+                if (counter == ameba.Checksize)
+                {
+                    isOver = true;
+                    WhoWon = 1 == selected;
+                    tempy = (sbyte)(y - indexer);
+                    for (sbyte c = (sbyte)(x + indexer); c >= 0; c--)
+                    {
+                        winnerCells.Add(new byte[] { (byte)tempy, (byte)c });
+                        tempy++;
+                    }//for
+                    return;
+                }//if
+            }//for
+        }
+
+
         //*********************************************************************
         //Public Methods
+        //Changes the cell at the cordinate to the side value which comes next
         public void Change(byte y, byte x)
         {
             if (board[y, x] != 0)
@@ -101,6 +187,27 @@ namespace TicTacToe
             board[y, x] = ameba.Side ? (byte)1 : (byte)2;
             HorizontalCheck(y, x);
             VerticalCheck(y, x);
+            DiagonalLeftCheck(y, x);
+            DiagonalRightCheck(y, x);
+        }
+
+        //---------------------------------------------------------
+        //Returns Empty places on the board (where the user can move)
+        public byte[][] PossMoves()
+        {
+            List<byte[]> output = new List<byte[]>();
+            for (byte i = 0; i < ameba.Y; i++)
+            {
+                for (byte j = 0; j < ameba.X; j++)
+                {
+                    if (board[i, j] == 0)
+                    {
+                        output.Add(new byte[] { i, j });
+                    }//if
+                }//for
+            }//for
+
+            return output.ToArray();
         }
     }
 }

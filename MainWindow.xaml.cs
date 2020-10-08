@@ -28,7 +28,7 @@ namespace TicTacToe
         private readonly Random rnd = new Random();//Egy szimpla random
         private bool onlyAIPlays = false;//Csak a 2 AI játszik
         private bool calculating = false;//Ezzel mutatjuk, hogy a gif meddig jelenjen meg
-        private ameba ameba;
+        private ameba ameba=new ameba();
 
         //---------------------------------------------------------------------------------------------
         //MainWindow inicializálása
