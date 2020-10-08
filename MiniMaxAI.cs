@@ -1,194 +1,128 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace TicTacToe
 {
-    /// <summary>
-    /// Minimax algoritmus alapján készült https://en.wikipedia.org/wiki/Minimax, de nem működik nagyobb pályán mint 3x3 mivel túl sok számítást kell végeznie
-    /// az algoritmus alapja, hogy megnézzük az összes lehetséges lépést és kiválasztjuk számunkra a legjobbat röviden ennyi
-    /// </summary>
     internal class MiniMaxAI : IAI
     {
-        //Varriables
-
-        private readonly PlayField current; //Jelenlegi pálya állapot
-        private List<PlayField> nextState; //Ez fog változni ez egy ideiglenes változó/pálya
-        private byte x;//A játéktér mérete x tengelyen
-        private byte y;//A játéktér mérete y tengelyen
-
         //Properties
-        public bool Side { get; private set; }
+        public bool aiSide { get; private set; }
 
-        //--------------------------------------------------------------------------------
-        //Konstruktor
-        public MiniMaxAI(PlayField be, bool aiside)
+        private IState currentState;
+        private List<IState> previousStates = new List<IState>();
+
+        public MiniMaxAI(bool aiSide, IState current)
         {
-            this.x = be.X;
-            this.y = be.Y;
-            this.current = be;
-            this.Side = aiside;
-            //Megcsináljuk a listát
-            nextState = new List<PlayField>();
+            this.aiSide = aiSide;
+            this.currentState = current;
         }
 
-        //-----------------------------------------------------------------------------
-        //Megkeresi a következő legjobb lépést
-        public async Task<byte[]> next()
+        //***************************************************************
+        //Private Methods
+        //Recursive call go through actions and returns their score(win 1, draw 0, lose -1)
+        private sbyte Recursion(short depth, bool Side)
         {
-            //Hozzáadjuk a 0. szinten levő pályát
-            nextState.Add(new PlayField(y, x, current.Checksize));
-            //A score ami alapján döntünk majd a nagyobb annál jobb (1 a legnagyobb my disappointment is immesurable)
-            sbyte[,] minmax = new sbyte[y, x];
-            //Végigmegyünk az összes legális lépésen
-            for (byte i = 0; i < y; i++)
+            //If the program needs more layers make
+            if (previousStates.Count == depth)
             {
-                for (byte j = 0; j < x; j++)
-                {
-                    //A jelenlegi játékról csinál egy másolatot
-                    nextState[0].MakePrevState(current);
-                    //Megnézzük, hogy ahova szeretnénk lépni az üres-e
-                    if (!nextState[0].IsCellEmpty(i, j))
-                    {
-                        //Ha nem üres akkor ez a hely egyből kiesett :(    (ennyivel is kevesebbet kell számítani so that's good)
-                        minmax[i, j] = sbyte.MinValue;
-                        continue;
-                    }//if
-                    //Megcsináljuk a feltételezett lépést a másolt pályánkon
-                    nextState[0].Change(i, j, Side);
-                    //Ha egyből győznénk azzal a lépéssel
-                    if (nextState[0].over)
-                    {
-                        return new byte[] { i, j };
-                    }//if
-                    //Meghívjuk a rekurzív függvényt ami az összes többi lépésen ami még jönni fog végigmegy(rekurzívan) és vissza ad egy sbyte-ot ami -1 = ha az ellenfél győzött
-                    //0 ha döntetlen  és 1 ha győzött
-                    minmax[i, j] = await Recursion(1, !Side);
-                }//for
-            }//for
-            //A legjobb scoreal rendelkező lépést adjuk vissza
-            return FindbiggestIndex(minmax);
-        }
-
-        //-----------------------------------------------------------------------------
-        //Utálom magam, hogy ezt kell használnom nevéből értetődik rekurzió
-        private async Task<sbyte> Recursion(byte deepness, bool whichside)
-        {
-            //Ha ezen a layeren még nincs egy pálya másolat csinálunk egyet
-            if (nextState.Count <= deepness)
-            {
-                nextState.Add(new PlayField(y, x, current.Checksize));
+                previousStates.Add(new State());
             }//if
-            //A score ami alapján döntünk majd a nagyobb annál jobb (1 a legnagyobb my disappointment is immesurable)
-            sbyte[,] minmax = new sbyte[y, x];
-            for (byte i = 0; i < y; i++)
+            previousStates[depth].ImportState(previousStates[depth - 1].ExportState());//imports the previous layer's state(when it still got the move it made)
+            byte[][] possActions = previousStates[depth].PossMoves();//Gets the possible actions
+            sbyte[] values = new sbyte[possActions.Length];//The values of the moves
+            for (int i = 0; i < possActions.Length; i++)
             {
-                for (byte j = 0; j < x; j++)
+                //reset the "depth" layer state
+                previousStates[depth].ImportState(previousStates[depth - 1].ExportState());
+                //Make one of the possible moves
+                previousStates[depth].Change(possActions[i][0], possActions[i][1], Side);
+                //Check if the game ended with the move
+                if (previousStates[depth].isOver)
                 {
-                    //A jelenlegi játékról csinál egy másolatot
-                    nextState[deepness].MakePrevState(nextState[deepness - 1]);
-                    //Megnézzük, hogy ahova szeretnénk lépni az üres-e
-                    if (!nextState[deepness].IsCellEmpty(i, j))
-                    {
-                        minmax[i, j] = sbyte.MinValue;
-                        continue;
-                    }//if
-                    //Megcsináljuk a feltételezett lépést a másolt pályánkon
-                    nextState[deepness].Change(i, j, whichside);
-                    //Megnézzük, hogy a lépés befejezte-e a játékot
-                    if (nextState[deepness].over)
-                    {
-                        //Megnézzük melyik oldal győzött
-                        if (nextState[deepness].Winner == Side)
-                        {
-                            //Ha annak az oldalnak ez a feltételezett legjobb lépése visszaadjuk az értéket
-                            if (whichside == Side)
-                                return 1;
-                            minmax[i, j] = 1;
-                        }//if
-                        else
-                        {
-                            //Ha annak az oldalnak ez a feltételezett legjobb lépése visszaadjuk az értéket
-                            if (whichside == !Side)
-                                return -1;
-                            minmax[i, j] = -1;
-                        }//else
-                    }//if
-                    //Ha nem ért véget a játék meghívjuk a függvényt magát megint :(
+                    if (previousStates[depth].Draw)
+                        values[i] = 0; //draw 0 -,-
                     else
-                    {
-                        //Ha nincs több hely ahova lehetne lépni akkor a játék döntetlen
-                        if (nextState[deepness].Counter > 0)
-                            minmax[i, j] = await Recursion((byte)(deepness + 1), !whichside);
-                        else
-                            return 0;
-                    }//else
-                }
-            }
-            //Visszaadjuk az aktuális oldalnak a legjobb lépésének értékét
-            return whichside == Side ? Findbiggest(minmax) : FindSmallest(minmax);
+                        //If the winner matches the side which the ai controls get 1 else -1
+                        values[i] = (sbyte)(previousStates[depth].WhoWon == aiSide ? 1 : -1);
+                    continue;
+                }//if
+                //Call the Recursion Function which will return a value 1 win 0 draw -1 lose
+                values[i] = Recursion((short)(depth + 1), !Side);
+            }//for
+            //if the Side matches the aiSide find the most optimal move for him else find the worst
+            return Side == aiSide ? FindLargestValue(values) : FindSmallestValue(values);
         }
 
-        //--------------------------------------------------------------------------------
-        //Megkeresi a legnagyobb érték helyét a tömbben
-        private byte[] FindbiggestIndex(sbyte[,] be)
+        //-------------------------------------------------------------------
+        //Returns the index of the largest element in the array
+        private short FindLargestIndex(sbyte[] input)
         {
-            sbyte biggest = sbyte.MinValue;
-            byte indexy = 0;
-            byte indexx = 0;
-
-            for (byte i = 0; i < y; i++)
+            short LargestIndex = 0;
+            for (short i = 1; i < input.Length; i++)
             {
-                for (byte j = 0; j < x; j++)
+                if (input[LargestIndex] < input[i])
                 {
-                    if (biggest < be[i, j])
-                    {
-                        indexy = i;
-                        indexx = j;
-                        biggest = be[i, j];
-                    }//if
-                }//for
+                    LargestIndex = i;
+                }//if
             }//for
-            return new byte[2] { indexy, indexx };
+            return LargestIndex;
         }
 
-        //--------------------------------------------------------------------------------
-        //Megkeresi a legnagyobb értéket a tömbben
-        private sbyte Findbiggest(sbyte[,] be)
+        //-------------------------------------------------------
+        //Returns the index of the smallest element in the array
+        private short FindSmallestIndex(sbyte[] input)
         {
-            sbyte biggest = sbyte.MinValue;
-
-            for (byte i = 0; i < y; i++)
+            short SmallestIndex = 0;
+            for (short i = 1; i < input.Length; i++)
             {
-                for (byte j = 0; j < x; j++)
+                if (input[SmallestIndex] > input[i])
                 {
-                    if (biggest < be[i, j])
-                    {
-                        biggest = be[i, j];
-                    }//if
-                }//for
+                    SmallestIndex = i;
+                }//if
             }//for
-            return biggest;
+            return SmallestIndex;
         }
 
-        //--------------------------------------------------------------------------------
-        //Megkeresi a legnagyobb értéket a tömbben
-        private sbyte FindSmallest(sbyte[,] be)
+        //---------------------------------------------------------
+        //Returns the Smallest value from the array
+        private sbyte FindSmallestValue(sbyte[] input)
         {
-            sbyte smallest = sbyte.MaxValue;
+            return input[FindSmallestIndex(input)];
+        }
 
-            for (byte i = 0; i < y; i++)
+        //-------------------------------------------------------------
+        //Returns the biggest value from the array
+        private sbyte FindLargestValue(sbyte[] input)
+        {
+            return input[FindLargestIndex(input)];
+        }
+
+        //*******************************************************************
+        //Public Methods
+        //Determines the Next best move
+        public async Task<byte[]> Next()
+        {
+            //So we don't leave junk here
+            previousStates.Clear();
+            byte[][] possActions = currentState.PossMoves();
+            //The score for the moves
+            sbyte[] score = new sbyte[possActions.Length];
+            //Add the 0. layer State
+            previousStates.Add(new State());
+            for (int i = 0; i < possActions.Length; i++)
             {
-                for (byte j = 0; j < x; j++)
-                {
-                    if (be[i, j] == sbyte.MinValue)
-                        continue;
-                    if (smallest > be[i, j])
-                    {
-                        smallest = be[i, j];
-                    }//if
-                }//for
+                //Reset the 0 layer state
+                previousStates[0].ImportState(currentState.ExportState());
+                //We make one of the possible moves
+                previousStates[0].Change(possActions[i][0], possActions[i][1], aiSide);
+                //Call the Recursion Function which will return a value 1 win 0 draw -1 lose
+                score[i] = Recursion(1, !aiSide);
             }//for
-            return smallest;
+
+            return possActions[FindLargestIndex(score)];
         }
     }
 }

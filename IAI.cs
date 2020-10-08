@@ -1,11 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace TicTacToe
 {
-    public interface IAI
+    internal interface IAI
     {
-        bool Side { get; }
+        //The side which the player plays as
+        bool aiSide { get; }
 
-        Task<byte[]> next();
+        //Gets the Next best move
+        Task<byte[]> Next();
     }
 }
