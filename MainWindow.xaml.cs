@@ -13,45 +13,44 @@ namespace TicTacToe
     /// </summary>
     public partial class MainWindow : Window
     {
-        private byte x = 3;//Alapértelmezetten x tengely méret (3)
-        private byte y = 3;//Alapértelmezetten y tengely méret (3)
-        private bool setupped;//Már meglett-e csinálva a render
-        private bool side;//Melyik oldal jön
-        private Border[,] szegelyek;//A szegelyeket letároljuk, hogy amikor méretet frissítünk tudjuk majd frissíteni
-        private Label[,] labels;//A labeleket letároljuk, hogy amikor méretet frissítünk tudjuk majd frissíteni
-        private byte Checksize = 3;//Alapértelmezetten mennyinek kell kigyülnie a győzelemhez (3)
-        private bool over;//Valaki nyert-e már
-        private Menu menu = new Menu();//A menu ablak megcsinálása
-        private bool inprogress;//A játék folyamatba van-e
-        private bool AIcontrolled = false; //AI játszik-e
-        private bool aiside;//Az ai melyik oldalt képviseli
-        private readonly Random rnd = new Random();//Egy szimpla random
-        private bool onlyAIPlays = false;//Csak a 2 AI játszik
-        private bool calculating = false;//Ezzel mutatjuk, hogy a gif meddig jelenjen meg
-        private ameba ameba = new ameba();
+        private byte x = 3;//x axis size default (3)
+        private byte y = 3;//y axis size default (3)
+        private bool setupped;//if the board have been already made
+        private bool side;//which side comes next
+        private Border[,] szegelyek;//the borders so it's easier to update their sizes
+        private Label[,] labels;//the labels so it's easier to update their sizes and values
+        private byte Checksize = 3;//how many do the player need to win default (3)
+        private Menu menu = new Menu();//the menu
+        private bool inprogress;//is the game in progress
+        private bool AIcontrolled = false; //is the ai playing
+        private bool aiside;//which side does the ai playing
+        private readonly Random rnd = new Random();//a simple random
+        private bool onlyAIPlays = false;//if only just 2 ai playing
+        private bool calculating = false;//should the gif still be showing
+        private ameba ameba = new ameba(); //The game itself
 
         //---------------------------------------------------------------------------------------------
-        //MainWindow inicializálása
+        //Constructor
         public MainWindow()
         {
             InitializeComponent();
 
-            //A Loading gif betöltése
+            //Loading in the Hourglass.gif
             ImageBehavior.SetAnimatedSource(HourglassGif, new BitmapImage(new Uri(@"Gifs/hourglass.gif", UriKind.Relative)));
 
-            //A játékmező megcsinálása
+            //Creates the playfield
             SetupWindow().GetAwaiter();
-            //A menu Done gombjához hozzárendeljük a handlert
+            //Gives the menu's Done button a Handler
             menu.Donebtn.Click += Done_Click;
         }
 
         //--------------------------------------------------------------------------------------------
-        //A szegélyek megcsinálása
+        //Makes the borders between the cells
         private void MakeBorders()
         {
-            int width = Convert.ToInt32(Field.ActualWidth / Field.ColumnDefinitions.Count / 20);//A grid egy cellájának a szélességének a 20%-a
-            int height = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count / 20);//A grid egy cellájának a Magasságának a 20%-a
-                                                                                               //Ha még nem lett megcsinálva
+            int width = Convert.ToInt32(Field.ActualWidth / Field.ColumnDefinitions.Count / 20);//20% of the width of a cell
+            int height = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count / 20);//20% of the height of a cell
+            //Ha még nem lett megcsinálva
             if (!setupped)
             {
                 szegelyek = new Border[y, x];
@@ -73,7 +72,7 @@ namespace TicTacToe
                 return;
             }//if
 
-            //Ha már meglett csinálva egyszer akkor csak ráfrissít a méretekre
+            //If the borders are already made then just updates their sizes
             for (int i = 0; i < y; i++)
             {
                 for (int j = 0; j < x; j++)
@@ -84,12 +83,12 @@ namespace TicTacToe
         }
 
         //--------------------------------------------------------------------------------
-        //Az elemek méretének igazítása
+        //Updates the sizes
         private void AdjustSize()
         {
-            //Szegélyek frissítése
+            //Updates the Borders
             MakeBorders();
-            //A Labelek méretének frissítése
+            //Updates the size of the Labels
             int size = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85);
             for (int i = 0; i < y; i++)
             {
@@ -101,32 +100,31 @@ namespace TicTacToe
         }
 
         //-----------------------------------------------------------------------------------------
-        //Ez csinálja meg az egész játékteret és állítja be a változókat
+        //This makes the playfield and some of the varriables
         private async Task SetupWindow()
         {
-            //Resetel mindent, ha a menüből indult ez egyébként pedig ezek az alap értékek
+            //Resets everything just incase
             inprogress = false;
             setupped = false;
             side = true;
-            over = false;
-            //Reseteli az ablakot
+            //Reseteli the window
             Field.Children.Clear();
             Field.ColumnDefinitions.Clear();
             Field.RowDefinitions.Clear();
 
-            //A megfelelő számú RowDefinition hozzáadása
+            //Adding the RowDefinitions
             for (int i = 0; i < y; i++)
             {
                 Field.RowDefinitions.Add(new RowDefinition());
             }
-            //A megfelelő számú ColumnDefinition hozzáadása
+            //Adding the ColumnDefinitions
             for (int i = 0; i < x; i++)
             {
                 Field.ColumnDefinitions.Add(new ColumnDefinition());
             }
-            //Labelek írásának mérete
+            //The Size of the Labels
             int size = Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85) == 0 ? 150 : Convert.ToInt32(Field.ActualHeight / Field.RowDefinitions.Count * 0.85);
-            //Labelek megcsinálása (később lehet képek lesznek)
+            //Making the Labels on the board
             labels = new Label[y, x];
             for (int i = 0; i < y; i++)
             {
@@ -148,18 +146,23 @@ namespace TicTacToe
                 }//for
             }//for
 
-            //Szegélyek megcsinálása
+            //Makes the borders
             MakeBorders();
-            //A játék adatbázisának megcsinálása
-            // game = new PlayField(y, x, (byte)(Checksize - 1));
         }
 
         //--------------------------------------------------------------------------------------
-        //A játék resetelése
+        //Resets the game and the board
         private async Task Reset()
         {
-            ameba = new ameba(x, y, Checksize, AIcontrolled);
-            over = false;
+            //Get the side of the ai
+            if ((bool)menu.randomradiobutton.IsChecked)
+                aiside = Convert.ToBoolean(rnd.Next(0, 1));
+            else
+                aiside = (bool)menu.Xradiobutton.IsChecked;
+
+            //opposite of the aiside if there is an ai
+            side = AIcontrolled ? !aiside : true;
+            ameba = new ameba(x, y, Checksize, AIcontrolled, aiside);
             for (int i = 0; i < y; i++)
             {
                 for (int j = 0; j < x; j++)
@@ -167,29 +170,34 @@ namespace TicTacToe
                     labels[i, j].Content = "";
                 }//for
             }//for
-            /*   //Ha AI van
-              if (AIcontrolled)
-              {
-                  await InitializeAI();
-              }
-              else*/
-            side = true;
+
+            //if the ai starts make the first move
+            if (aiside)
+            {
+                //The moves which the ai will make
+                byte[] temp = await ameba.Next();
+                await ameba.Change(temp[0], temp[1]);
+                //Update the label
+                ChangeLabel(!side, temp[0], temp[1]);
+                side = false;
+            }
         }
 
         //-----------------------------------------------------------------------------
+        //Mark the cells which caused the win
         private void Finish()
         {
             foreach (var item in ameba.winnerCells)
             {
                 labels[item[0], item[1]].Foreground = System.Windows.Media.Brushes.Yellow;
-            }
+            }//forea
         }
 
         //----------------------------------------------------------------------------------
-        //Label tartalmának módosítása
+        //Changes the content of the Label
         private void ChangeLabel(bool sidebe, byte choseny, byte chosenx)
         {
-            //Melyik oldalnak kell a jelét odarakni
+            //Which side placed their mark there
             if (sidebe)
             {
                 labels[choseny, chosenx].Content = "X";
@@ -204,85 +212,88 @@ namespace TicTacToe
 
         //HANDLEREK
         //-----------------------------------------------------------------------------------------
-        //Ha az ablak mérete változott
+        //If the window size changed run AdjustSize()
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             AdjustSize();
         }
 
         //------------------------------------------------------------------------------------------------
-        //A kiválasztás
+        //Selection of the cell and changing it
         private async void Select(object sender, MouseButtonEventArgs e)
         {
-            //Hogy a játék már folyamatban van
+            //A varriable to inicate that the game is in progress
             inprogress = true;
-            //Ha vége van a játéknak ne lehessen bele matatni
+            //When the game is over or the ai is taking it's time the player can't mess stuff up
             if (ameba.isOver || onlyAIPlays || calculating)
             {
                 return;
             }//if
             Label be = sender as Label;
-            //Ne lehessen felülírni egy választott értéket
+            //So the players can't overwrite an already filled cell
             if (be.Content.ToString() != "")
             {
                 return;
             }//if
-            byte chosenx;
-            byte choseny;
+            byte chosenx;//x cord of the selected cell
+            byte choseny;//y cord of the selected cell
 
-            //Egy ideiglenes string változó
+            //A temporary varriable
             string stemp = be.Name.Replace('K', ' ');
-            //Meghatározzuk az indexét a kiválasztott elemnek az adatbázisban
+            //Get the cords of the selected cell
             chosenx = Convert.ToByte(stemp.Split('S')[1]);
             choseny = Convert.ToByte(stemp.Split('S')[0]);
 
-            //A label frissítése
+            //Update the Label
             ChangeLabel(side, choseny, chosenx);
 
-            //A game classban is változtatjuk a cellák értékét (Hogy később majd ne keljen mindig kiolvasni a labelekből)
+            //Change the value of the cell also in the game class also checks if we got a winner
             await ameba.Change(choseny, chosenx);
-
+            //If we got a Winner or Draw
             if (ameba.isOver)
             {
                 Finish();
                 return;
-            }
+            }//if
 
-            //Felcseréljük azt, hogy ki jön
+            //swap the sides if it's not controlled by ai
             if (!AIcontrolled)
                 side = !side;
             else
             {
+                //The moves which the ai will make
                 byte[] temp = await ameba.Next();
                 await ameba.Change(temp[0], temp[1]);
-                //A label frissítése
+                //Update the label
                 ChangeLabel(!side, temp[0], temp[1]);
-            }
+            }//else
+            //If we got a Winner or Draw
             if (ameba.isOver)
             {
                 Finish();
-            }
+            }//if
         }
 
         //-----------------------------------------------------------------------
-        //Menu és Reset előhozása
+        //Keyboard Control
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            //Megvizsgáljuk, hogy CTRL-t nyomja-e
+            //Checks if the user is holding down the CTRL
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
             {
-                //Megnézzük, hogy nyomja-e azokat a gombokat amik kellenek
+                //Checks if the user presses eiter R or M
                 switch (e.Key)
                 {
                     case Key.R:
-                        if (!over)
+                        if (ameba.isOver)
                         {
-                            //Biztos resetelni akarja-e
+                            //To make sure if the player really want to quit
                             if (MessageBox.Show("A játék resetelése", "Kérdés", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                             {
                                 return;
                             }//if
                         }
+                        //Resets everything
                         Reset();
                         break;
 
@@ -298,18 +309,19 @@ namespace TicTacToe
         }
 
         //--------------------------------------------------------------------------------
-        //Menüből a tartalom áthozása
+        //Getting the data from the menu
         private void Done_Click(object sender, RoutedEventArgs e)
         {
+            //So we warn the user that he/she is about to terminate the game
             if (inprogress)
             {
-                if (MessageBox.Show("A játék folyamatban van biztos akarod?", "Kérdés", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                if (MessageBox.Show("The game is still in progress are you sure?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                 {
                     return;
-                }
-            }
+                }//if
+            }//if
 
-            //Ha illegális érték lenne beírva akkor a default érték lesz
+            //Checks the checksizetbox if it's value is illegal give it a default
             if (menu.checksizetbox.Text == "" || Convert.ToByte(menu.checksizetbox.Text) <= 2)
             {
                 Checksize = 3;
@@ -318,7 +330,7 @@ namespace TicTacToe
             {
                 Checksize = Convert.ToByte(menu.checksizetbox.Text);
             }//else
-             //Az x és y tengely tesztelése
+             //Checks if the x and y textbox values are correct if they're empty give the default
             if (menu.xtengelytbox.Text == "")
             {
                 if (menu.ytengelytbox.Text == "")
@@ -349,26 +361,27 @@ namespace TicTacToe
                 y = Convert.ToByte(menu.ytengelytbox.Text);
             }//else
 
-            //Az AI legyen-e
-            //A vagy jel után azért kell, hogy ne fussunk bele olyan helyzetbe, hogy csak 1 AI van meg amikor egymás ellen akarjuk uszítani őket
+            //Should the program make ais
+            //The or operator is needed so we don't run in to a problem such as we don't have 2 ais
             AIcontrolled = (bool)menu.AIcheck.IsChecked || (bool)menu.OnlyAIPlaysCheckBox.IsChecked;
 
             onlyAIPlays = (bool)menu.OnlyAIPlaysCheckBox.IsChecked;
 
-            //Elrejtjük a menüt
+            //Hides the menu
             menu.Hide();
 
-            //Újra megcsináljuk az ablak felépítését
+            //The program creates a new board for us
             SetupWindow().GetAwaiter();
 
-            //A méretek frissítése
+            //Updates the sizes in our window
             AdjustSize();
 
+            //Resets the board
             Reset();
         }
 
         //----------------------------------------------------------------------------------------
-        //Leálljon minden amikor kell
+        //So it stops the menu as well
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             menu.Close();

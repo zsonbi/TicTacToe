@@ -5,19 +5,22 @@ namespace TicTacToe
 {
     internal class State : IState
     {
-        private byte[,] board = new byte[ameba.Y, ameba.X];
-        private List<byte[]> winnerCells = new List<byte[]>();
-        private short counter = (short)(ameba.X * ameba.Y);
+        private byte[,] board = new byte[ameba.Y, ameba.X];//A 2d array which stores the value of each cell 0-empty 1-'X' 2-'O'
+        private List<byte[]> winnerCells = new List<byte[]>();//The indexes of the cell which won
+        private short counter = (short)(ameba.X * ameba.Y);//The number of empty cells left
 
         //******************************************************************
         //Properties
         //The bool value if the game is still in progress
         public bool isOver { get; private set; }
 
+        //Determines who won true-'X' false-'O'
         public bool WhoWon { get; private set; }
 
+        //Determines if the game ended in draw
         public bool Draw { get; private set; }
 
+        //The indexes of the cell which won
         public List<byte[]> WinnerCells { get => winnerCells; }
 
         //*******************************************************************
