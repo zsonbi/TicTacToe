@@ -26,7 +26,7 @@ namespace TicTacToe
         }
 
         //-----------------------------------------------------------------
-        //Csak számot lehessen beírni
+        //Only numbers -,-
         private void OnlyNumber(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
@@ -34,27 +34,27 @@ namespace TicTacToe
         }
 
         //-----------------------------------------------------------------
-        //A hibás érték vizsgálata
+        //Checks for incorrect values and alerts the user for the checkbox
         private void checksizetbox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox be = sender as TextBox;
-            //Ha üresen hagyná
+            //If it were left empty
             if (be.Text == "")
             {
                 be.Background = Brushes.Red;
                 return;
             }
-            //Ne legyen túl nagy figyelmeztetjük a felhasználót
+            //Alert the user that the value is too big and almost impossible to win for either side
             if (Convert.ToByte(be.Text) > 5)
             {
                 be.Background = Brushes.Yellow;
             }//if
-            //Ne adjunk meg hülyeséget
+            //This value is just a joke if someone want to play with this
             else if (Convert.ToByte(be.Text) <= 2)
             {
                 be.Background = Brushes.Red;
             }//else if
-             //Ha megfelel
+             //if it's correct
             else
             {
                 be.Background = Brushes.Green;
@@ -62,28 +62,28 @@ namespace TicTacToe
         }
 
         //-------------------------------------------------------------------
-        //A hibás értékek vizsgálata a tengelyek Textboxánál
+        //Checks for incorrect values and alerts the user for the xtengelytbox and ytengelytbox
         private void tengelyek_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox be = sender as TextBox;
-            //Ha üresen hagyná
+            //if it were left empty
             if (be.Text == "")
             {
                 be.Background = Brushes.Red;
                 return;
             }
-            //Ne legyen túl nagy figyelmeztetjük a felhasználót
+            //Alerts the user that it will be too big
             if (Convert.ToByte(be.Text) > 32)
             {
-                MessageBox.Show("32-nél többet nem ajánlok, de ám legyen (lehet nem fog menni)");
+                MessageBox.Show("I won't suggest doing 32 or more because it might not load and also who needs this big board");
                 be.Background = Brushes.Yellow;
             }//if
-            //Ne legyen túl kicsit
+            //So it won't be too small
             else if (Convert.ToByte(be.Text) < 3)
             {
                 be.Background = Brushes.Red;
             }//else if
-            //Ha megfelel
+            //if it's correct
             else
             {
                 be.Background = Brushes.Green;
@@ -91,13 +91,13 @@ namespace TicTacToe
         }
 
         //----------------------------------------------------------------------------------
-        //Figyelmeztessük a felhasználót, hogy meg fogja ölni a gépét
+        //Alert the user that he/she will kill the computer
         private void MiniMaxAIRadiobtn_Checked(object sender, RoutedEventArgs e)
         {
             if ((xtengelytbox.Text != "" && Convert.ToInt32(xtengelytbox.Text) > 3) || (ytengelytbox.Text != "" && Convert.ToInt32(ytengelytbox.Text) > 3))
             {
-                MessageBox.Show("3x3-nál szerintem nem akarod nagyobbra a géped meg fog halni sok számítás kell az 3^(x*y) kombináció kiszámolásához");
-            }
+                MessageBox.Show("Your pc will die with this big board and this type of ai (just a warning)");
+            }//if
         }
     }
 }

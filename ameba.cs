@@ -11,7 +11,6 @@ namespace TicTacToe
         //Varriables
 
         private State gameState; //The gameboard basicly, but it can also check if someone won
-
         private IAI ai; //ai WOW it must be smart, no it's not
 
         //**********************************************************
@@ -36,7 +35,7 @@ namespace TicTacToe
         public static bool Side { get; private set; }
 
         //Constructor
-        public ameba(byte x = 3, byte y = 3, byte checksize = 3, bool aiControlled = false)
+        public ameba(byte x = 3, byte y = 3, byte checksize = 3, bool aiControlled = false, bool aiSide = false)
         {
             X = x;
             Y = y;
@@ -45,7 +44,7 @@ namespace TicTacToe
             gameState = new State();
             if (aiControlled)
             {
-                ai = new MiniMaxAI(false, gameState);
+                ai = new MiniMaxAI(aiSide, gameState);
             }//if
         }
 

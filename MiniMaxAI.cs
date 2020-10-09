@@ -8,12 +8,18 @@ namespace TicTacToe
 {
     internal class MiniMaxAI : IAI
     {
+        //Varriables
+
+        private IState currentState;//The current state of the board
+        private List<IState> cloneStates = new List<IState>();//Clones of the original state each depth in the recursion function adds one more layer
+
+        //********************************************************************
         //Properties
+        //Which side does the ai plays as
         public bool aiSide { get; private set; }
 
-        private IState currentState;
-        private List<IState> previousStates = new List<IState>();
-
+        //******************************************************************
+        //Constructor
         public MiniMaxAI(bool aiSide, IState current)
         {
             this.aiSide = aiSide;
@@ -26,27 +32,27 @@ namespace TicTacToe
         private sbyte Recursion(short depth, bool Side)
         {
             //If the program needs more layers make
-            if (previousStates.Count == depth)
+            if (cloneStates.Count == depth)
             {
-                previousStates.Add(new State());
+                cloneStates.Add(new State());
             }//if
-            previousStates[depth].ImportState(previousStates[depth - 1].ExportState());//imports the previous layer's state(when it still got the move it made)
-            byte[][] possActions = previousStates[depth].PossMoves();//Gets the possible actions
+            cloneStates[depth].ImportState(cloneStates[depth - 1].ExportState());//imports the previous layer's state(when it still got the move it made)
+            byte[][] possActions = cloneStates[depth].PossMoves();//Gets the possible actions
             sbyte[] values = new sbyte[possActions.Length];//The values of the moves
             for (int i = 0; i < possActions.Length; i++)
             {
                 //reset the "depth" layer state
-                previousStates[depth].ImportState(previousStates[depth - 1].ExportState());
+                cloneStates[depth].ImportState(cloneStates[depth - 1].ExportState());
                 //Make one of the possible moves
-                previousStates[depth].Change(possActions[i][0], possActions[i][1], Side);
+                cloneStates[depth].Change(possActions[i][0], possActions[i][1], Side);
                 //Check if the game ended with the move
-                if (previousStates[depth].isOver)
+                if (cloneStates[depth].isOver)
                 {
-                    if (previousStates[depth].Draw)
+                    if (cloneStates[depth].Draw)
                         values[i] = 0; //draw 0 -,-
                     else
                         //If the winner matches the side which the ai controls get 1 else -1
-                        values[i] = (sbyte)(previousStates[depth].WhoWon == aiSide ? 1 : -1);
+                        values[i] = (sbyte)(cloneStates[depth].WhoWon == aiSide ? 1 : -1);
                     continue;
                 }//if
                 //Call the Recursion Function which will return a value 1 win 0 draw -1 lose
@@ -106,18 +112,25 @@ namespace TicTacToe
         public async Task<byte[]> Next()
         {
             //So we don't leave junk here
-            previousStates.Clear();
+            cloneStates.Clear();
             byte[][] possActions = currentState.PossMoves();
+
+            //if there is only one move return that
+            if (possActions.GetLength(0) == 1)
+            {
+                return possActions[0];
+            }
+
             //The score for the moves
             sbyte[] score = new sbyte[possActions.Length];
             //Add the 0. layer State
-            previousStates.Add(new State());
+            cloneStates.Add(new State());
             for (int i = 0; i < possActions.Length; i++)
             {
                 //Reset the 0 layer state
-                previousStates[0].ImportState(currentState.ExportState());
+                cloneStates[0].ImportState(currentState.ExportState());
                 //We make one of the possible moves
-                previousStates[0].Change(possActions[i][0], possActions[i][1], aiSide);
+                cloneStates[0].Change(possActions[i][0], possActions[i][1], aiSide);
                 //Call the Recursion Function which will return a value 1 win 0 draw -1 lose
                 score[i] = Recursion(1, !aiSide);
             }//for
