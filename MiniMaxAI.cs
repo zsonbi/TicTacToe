@@ -131,6 +131,13 @@ namespace TicTacToe
                 cloneStates[0].ImportState(currentState.ExportState());
                 //We make one of the possible moves
                 cloneStates[0].Change(possActions[i][0], possActions[i][1], aiSide);
+
+                //If the move won instantly then it's not a big question
+                if (cloneStates[0].isOver && cloneStates[0].WhoWon == aiSide)
+                {
+                    return possActions[i];
+                }//if
+
                 //Call the Recursion Function which will return a value 1 win 0 draw -1 lose
                 score[i] = Recursion(1, !aiSide);
             }//for
