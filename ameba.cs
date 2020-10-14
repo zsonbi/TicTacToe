@@ -35,7 +35,7 @@ namespace TicTacToe
         public static bool Side { get; private set; }
 
         //Constructor
-        public ameba(byte x = 3, byte y = 3, byte checksize = 3, bool aiControlled = false, bool aiSide = false)
+        public ameba(byte x = 3, byte y = 3, byte checksize = 3, bool aiControlled = false, bool aiSide = false, byte aiType = 1)
         {
             X = x;
             Y = y;
@@ -44,7 +44,19 @@ namespace TicTacToe
             gameState = new State();
             if (aiControlled)
             {
-                ai = new MiniMaxAI(aiSide, gameState);
+                switch (aiType)
+                {
+                    case 0:
+                        ai = new MiniMaxAI(aiSide, gameState);
+                        break;
+
+                    case 1:
+                        ai = new MCTSAI(aiSide, gameState);
+                        break;
+
+                    default:
+                        break;
+                }
             }//if
         }
 

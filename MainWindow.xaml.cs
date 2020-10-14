@@ -28,6 +28,7 @@ namespace TicTacToe
         private bool onlyAIPlays = false;//if only just 2 ai playing
         private bool calculating = false;//should the gif still be showing
         private ameba ameba = new ameba(); //The game itself
+        private byte aiType = 0; //The Type of the ai (0-Minimax, 1-MCTS)
 
         //---------------------------------------------------------------------------------------------
         //Constructor
@@ -162,7 +163,7 @@ namespace TicTacToe
 
             //opposite of the aiside if there is an ai
             side = AIcontrolled ? !aiside : true;
-            ameba = new ameba(x, y, Checksize, AIcontrolled, aiside);
+            ameba = new ameba(x, y, Checksize, AIcontrolled, aiside, aiType);
             for (int i = 0; i < y; i++)
             {
                 for (int j = 0; j < x; j++)
@@ -367,6 +368,12 @@ namespace TicTacToe
 
             onlyAIPlays = (bool)menu.OnlyAIPlaysCheckBox.IsChecked;
 
+            if ((bool)menu.MiniMaxAIRadiobtn.IsChecked)
+                aiType = 0;
+            else if ((bool)menu.MCTSRadiobtn.IsChecked)
+                aiType = 1;
+            else
+                aiType = 2;
             //Hides the menu
             menu.Hide();
 

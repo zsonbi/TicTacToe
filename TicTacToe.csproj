@@ -80,6 +80,7 @@
     <Compile Include="IState.cs" />
     <Compile Include="MCTSAI.cs" />
     <Compile Include="MiniMaxAI.cs" />
+    <Compile Include="Node.cs" />
     <Compile Include="State.cs" />
     <Compile Include="ameba.cs" />
     <Page Include="MainWindow.xaml">
