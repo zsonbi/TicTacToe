@@ -8,7 +8,8 @@ namespace TicTacToe
 {
     internal class Node
     {
-        private Node Parent;
+        //Returns the parent of the node
+        public Node Parent { get; private set; }
 
         //Determines if the Node is a Leaf
         public bool IsLeaf { get; private set; }
@@ -20,7 +21,7 @@ namespace TicTacToe
         public int NumberOfVisits { get; private set; }
 
         //The Value of the Node (how many score it gotten for the games)
-        public short value { get; private set; }
+        public int value { get; private set; }
 
         //The depth of the node in the tree (0 is the first node's)
         public short depth { get; private set; }
@@ -33,6 +34,9 @@ namespace TicTacToe
 
         //Which Side put the node in this state
         public bool Side { get; private set; }
+
+        //If the Node entered into terminal State
+        public bool TerminalState { get; private set; }
 
         //Constructor for the elements in the tree
         public Node(Node parent, byte[,] State, byte[] action)
@@ -55,19 +59,21 @@ namespace TicTacToe
             this.depth = 0;
             this.Action = action;
             IsLeaf = true;
-            NumberOfVisits = 0;
+            NumberOfVisits = 1;
             this.State = State;
             this.Side = aiSide;
         }
 
         //---------------------------------------------------------------
         //calculates the MeanValue
-        public void CalcMeanValue(int numberOfTotalVisits)
+        public float CalcMeanValue(int numberOfTotalVisits)
         {
             if (NumberOfVisits == 0)
                 this.MeanValue = float.MaxValue;
             else
-                MeanValue = (float)(this.value + 4 * Math.Sqrt(Math.Log10(numberOfTotalVisits) / NumberOfVisits));
+                MeanValue = (float)(((float)value / (float)NumberOfVisits) + 1.41f * Math.Sqrt(Math.Log10(numberOfTotalVisits) / (float)NumberOfVisits));
+
+            return MeanValue;
         }
 
         //---------------------------------------------------------
@@ -75,11 +81,11 @@ namespace TicTacToe
         public void Update(sbyte value)
         {
             NumberOfVisits++;
+            this.value += value;
             if (depth == 0)
             {
                 return;
             }
-            this.value += value;
             Parent.Update(value);
         }
 
@@ -88,6 +94,11 @@ namespace TicTacToe
         public void NotLeafAnyMore()
         {
             this.IsLeaf = false;
+        }
+
+        public void EnteredIntoTerminalState()
+        {
+            TerminalState = true;
         }
     }
 }

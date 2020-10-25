@@ -243,7 +243,15 @@ namespace TicTacToe
         //Exports the state
         public byte[,] ExportState()
         {
-            return board;
+            byte[,] output = new byte[ameba.Y, ameba.X];
+            for (int i = 0; i < ameba.Y; i++)
+            {
+                for (int j = 0; j < ameba.X; j++)
+                {
+                    output[i, j] = board[i, j];
+                }
+            }
+            return output;
         }
     }
 }

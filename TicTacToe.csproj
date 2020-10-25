@@ -78,6 +78,7 @@
     </ApplicationDefinition>
     <Compile Include="IAI.cs" />
     <Compile Include="IState.cs" />
+    <Compile Include="MCTree.cs" />
     <Compile Include="MCTSAI.cs" />
     <Compile Include="MiniMaxAI.cs" />
     <Compile Include="Node.cs" />
