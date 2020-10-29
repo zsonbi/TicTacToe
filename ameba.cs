@@ -47,11 +47,11 @@ namespace TicTacToe
                 switch (aiType)
                 {
                     case 0:
-                        ai = new MiniMaxAI(aiSide, gameState);
+                        ai = new MiniMaxAI((byte)(aiSide ? 1 : 2), gameState);
                         break;
 
                     case 1:
-                        ai = new MCTSAI(aiSide, gameState);
+                        ai = new MCTSAI((byte)(aiSide ? 1 : 2), gameState);
                         break;
 
                     default:
@@ -65,14 +65,13 @@ namespace TicTacToe
         //Changes the indexed element to the side which comes next
         public async Task Change(byte y, byte x)
         {
-            gameState.Change(y, x, ameba.Side);
-
+            gameState.Change(new Action(new byte[] { y, x }, (byte)(Side ? 1 : 2)));
             Side = !Side;
         }
 
         //------------------------------------------------------------------
         //Gets the next move of the bot
-        public async Task<byte[]> Next()
+        public async Task<IAction> Next()
         {
             return await ai.Next();
         }

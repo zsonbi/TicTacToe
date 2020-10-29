@@ -8,97 +8,91 @@ namespace TicTacToe
 {
     internal class Node
     {
-        //Returns the parent of the node
-        public Node Parent { get; private set; }
+        //The parent of the node
+        private Node parent;
 
-        //Determines if the Node is a Leaf
-        public bool IsLeaf { get; private set; }
+        //The Value of the Node (How many score it has gotten)
+        public int Value { get; private set; }
 
-        //Gets the MeanValue
-        public float MeanValue { get; private set; }
+        //The MeanValue of the Node
+        public double MeanValue { get; private set; }
 
-        //The number of visits of this node and its children's
+        //The Node's Children
+        public List<Node> Children { get; private set; }
+
+        //How many times has this node been visite
         public int NumberOfVisits { get; private set; }
 
-        //The Value of the Node (how many score it gotten for the games)
-        public int value { get; private set; }
+        //The depth of the Node in the tree
+        public short Depth { get; private set; }
 
-        //The depth of the node in the tree (0 is the first node's)
-        public short depth { get; private set; }
+        //The Action we took to get here
+        public IAction Action { get; private set; }
 
-        //The action we took to get to this State
-        public byte[] Action { get; private set; }
+        //The State of the Node
+        public IState State { get; private set; }
 
-        //The state of the board
-        public byte[,] State { get; private set; }
-
-        //Which Side put the node in this state
-        public bool Side { get; private set; }
-
-        //If the Node entered into terminal State
-        public bool TerminalState { get; private set; }
-
-        //Constructor for the elements in the tree
-        public Node(Node parent, byte[,] State, byte[] action)
+        //-----------------------------------------------------
+        //Normal Constructor
+        public Node(Node parent, IAction action, IState state)
         {
-            this.value = 0;
-            this.depth = (short)(parent.depth + 1);
-            this.Action = action;
-            IsLeaf = true;
             NumberOfVisits = 0;
-            this.State = State;
-            this.Side = !parent.Side;
-            this.Parent = parent;
-        }
-
-        //----------------------------------------------------------------
-        //Constructor for the first Node in the tree
-        public Node(byte[,] State, byte[] action, bool aiSide)
-        {
-            this.value = 0;
-            this.depth = 0;
+            this.parent = parent;
+            Children = new List<Node>();
+            Depth = (short)(parent.Depth + 1);
             this.Action = action;
-            IsLeaf = true;
-            NumberOfVisits = 1;
-            this.State = State;
-            this.Side = aiSide;
+            this.State = state;
         }
 
-        //---------------------------------------------------------------
-        //calculates the MeanValue
-        public float CalcMeanValue(int numberOfTotalVisits)
+        //---------------------------------------------------------
+        //Constructor for the root node
+        public Node(IState state, IAction action)
+        {
+            State = state;
+            NumberOfVisits = 0;
+            Children = new List<Node>();
+            parent = null;
+            Depth = 0;
+            this.Action = action;
+        }
+
+        //**************************************************************************
+        //Public Methods
+        /// <summary>
+        ///Calculates the MeanValue if it's never been visited returns double.MaxValue
+        /// </summary>
+        /// <param name="numberOfTotalVisits"> The number of visits of the root node</param>
+        /// <returns>The Calculated MeanValue</returns>
+        public double CalcMeanValue(int numberOfTotalVisits)
         {
             if (NumberOfVisits == 0)
-                this.MeanValue = float.MaxValue;
+                MeanValue = double.MaxValue;
             else
-                MeanValue = (float)(((float)value / (float)NumberOfVisits) + 1.41f * Math.Sqrt(Math.Log10(numberOfTotalVisits) / (float)NumberOfVisits));
+                MeanValue = (double)(Value / NumberOfVisits) + 14.1 * Math.Sqrt(Math.Log(numberOfTotalVisits) / this.NumberOfVisits);
 
             return MeanValue;
         }
 
-        //---------------------------------------------------------
-        //Updates the value of this node and it's parent's
-        public void Update(sbyte value)
+        //-------------------------------------------------------------------
+        //Adds a new Child to the Node
+        public void AddChild(Node Child)
         {
-            NumberOfVisits++;
-            this.value += value;
-            if (depth == 0)
+            Children.Add(Child);
+        }
+
+        //--------------------------------------------------------------------
+        //Updates this Node and it's parents Value and number of visits
+        public void Update(byte Winner)
+        {
+            if (Winner == 0)
             {
-                return;
+                Value += 5;
             }
-            Parent.Update(value);
-        }
-
-        //------------------------------------------
-        //changes IsLeaf to false that's it
-        public void NotLeafAnyMore()
-        {
-            this.IsLeaf = false;
-        }
-
-        public void EnteredIntoTerminalState()
-        {
-            TerminalState = true;
+            else if (Winner == Action.player)
+                Value += 10;
+            NumberOfVisits += 1;
+            if (parent != null)
+                parent.Update(Winner);
         }
     }
 }

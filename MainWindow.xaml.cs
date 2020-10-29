@@ -175,11 +175,10 @@ namespace TicTacToe
             //if the ai starts make the first move
             if (aiside)
             {
-                //The moves which the ai will make
-                byte[] temp = await ameba.Next();
-                await ameba.Change(temp[0], temp[1]);
+                IAction temp = await ameba.Next();
+                await ameba.Change(temp.Move[0], temp.Move[1]);
                 //Update the label
-                ChangeLabel(!side, temp[0], temp[1]);
+                ChangeLabel(!side, temp.Move[0], temp.Move[1]);
                 side = false;
             }
         }
@@ -263,10 +262,10 @@ namespace TicTacToe
             else
             {
                 //The moves which the ai will make
-                byte[] temp = await ameba.Next();
-                await ameba.Change(temp[0], temp[1]);
+                IAction temp = await ameba.Next();
+                await ameba.Change(temp.Move[0], temp.Move[1]);
                 //Update the label
-                ChangeLabel(!side, temp[0], temp[1]);
+                ChangeLabel(!side, temp.Move[0], temp.Move[1]);
             }//else
             //If we got a Winner or Draw
             if (ameba.isOver)

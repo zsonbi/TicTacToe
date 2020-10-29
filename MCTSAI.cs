@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,120 +8,129 @@ namespace TicTacToe
 {
     internal class MCTSAI : IAI
     {
-        //Varriables
+        private IState currState; //The real state of the game
+        private IState simulationState;//The state of the game which we will use to test the moves
+        private Random rnd = new Random();//Random -,-
+        private int itteration = 4000; //How many itterations does we want to run the program
+        private Tree tree;//The tree
+        private byte NumberOfPlayers = 2;//How many players are there
+        private byte level = 1; //The level of the ai
 
-        private IState currentState;//The current state of the board
-        private IState simulationState;
-        private MCTree tree = new MCTree();
-        private int itteration = 6000;
-        private readonly Random rnd = new Random();
+        //The player as the AI plays
+        public byte aiSide { get; private set; }
 
-        //********************************************************************
-        //Properties
-        //Which side does the ai plays as
-        public bool aiSide { get; private set; }
-
-        //The number of total visits
-        public static int numberOfTotalVisits { get; private set; }
-
-        //**********************************************************************
+        //----------------------------------------------------------------
         //Constructor
-        public MCTSAI(bool aiSide, IState current)
+        public MCTSAI(byte aiSide, IState currentState)
         {
-            this.currentState = current;
+            this.currState = currentState;
             this.aiSide = aiSide;
             simulationState = new State();
         }
 
-        //************************************************************************
+        //**********************************************************************
         //Private Methods
-        //Expands the node so it will have children (only if the node is leaf)
-        private void Expand(Node parent)
+        //Returns the next player
+        private byte NextPlayer(byte current)
         {
-            if (!parent.IsLeaf)
-            {
-                throw new Exception("Not Leaf");
-            }//if
-            parent.NotLeafAnyMore();
-            simulationState.ImportState(parent.State);
-            simulationState.Change(parent.Action[0], parent.Action[1], parent.Side);
-            byte[][] possActions = simulationState.PossMoves();
-
-            for (short i = 0; i < possActions.GetLength(0); i++)
-            {
-                Node child = new Node(parent, simulationState.ExportState(), possActions[i]);
-                tree.Add(child);
-            }//for
+            return (byte)(current - 1 == 0 ? NumberOfPlayers : current - 1);
         }
 
-        //------------------------------------------------------------
-        //Simulate a game with random moves and return the outcome
-        private void Simulate(Node input)
+        //---------------------------------------------------------------------
+        //returns the previous player
+        private byte PrevPlayer(byte current)
         {
-            simulationState.ImportState(input.State);
-            simulationState.Change(input.Action[0], input.Action[1], input.Side);
-            bool tempSide = !input.Side;
+            return (byte)(current + 1 > NumberOfPlayers ? 1 : current + 1);
+        }
 
+        //-------------------------------------------------------------
+        //Finds the best move which has the highest winrate
+        private IAction FindBestMove()
+        {
+            Node best = tree.root.Children[0];
+            double bestvalue = best.Value / best.NumberOfVisits;
+            foreach (var item in tree.root.Children)
+            {
+                if (bestvalue < item.Value / item.NumberOfVisits)
+                {
+                    best = item;
+                    bestvalue = item.Value / item.NumberOfVisits;
+                }
+            }
+            return best.Action;
+        }
+
+        //----------------------------------------------------------------
+        //Expands the Node so it will have children
+        private void Expand(Node parent)
+        {
+            simulationState.ImportState(parent.State);
+
+            if (parent.Action.Move != null) //If it's not the root node
+                simulationState.Change(parent.Action);
             if (simulationState.isOver)
             {
-                input.Update((sbyte)(simulationState.Draw ? 0 : simulationState.WhoWon == aiSide ? 100 : -100));
                 return;
             }
 
+            //Gets the possible Actions
+            IAction[] possActions = simulationState.PossMoves(NextPlayer(parent.Action.player));
+            foreach (var item in possActions)
+            {
+                State tempState = new State();
+                tempState.ImportState(simulationState);
+                Node Child = new Node(parent, item, tempState);
+                parent.AddChild(Child);
+            }
+        }
+
+        //--------------------------------------------------------------------
+        //Make a random simulation of the game
+        private void Simulate(Node selected)
+        {
+            simulationState.ImportState(selected.State);
+
+            if (selected.Action.Move != null)
+                simulationState.Change(selected.Action);
+            //So that we know which player comes next
+            byte currPlayer = NextPlayer(selected.Action.player);
             while (!simulationState.isOver)
             {
-                byte[][] possActions = simulationState.PossMoves();
-                short chosenMove = (short)rnd.Next(0, possActions.GetLength(0));
-                simulationState.Change(possActions[chosenMove][0], possActions[chosenMove][1], tempSide);
-                tempSide = !tempSide;
-            }//while
-            input.Update((sbyte)(simulationState.Draw ? 0 : simulationState.WhoWon == aiSide ? 1 : 0));
-            numberOfTotalVisits++;
+                IAction[] possActions = simulationState.PossMoves(currPlayer);
+                simulationState.Change(possActions[rnd.Next(0, possActions.Length)]);
+                currPlayer = NextPlayer(currPlayer);
+            }
+            //Updates the Value of the Node
+            selected.Update(simulationState.whoWon);
         }
 
-        //-----------------------------------------------------------
-        //After the tree search find the most promising move from the first layer
-        private byte[] FindBestMove()
-        {
-            return tree.SelectUpToDepth(1).Action;
-        }
-
-        private void CreateBaseNodes()
-        {
-            byte[][] possActions = currentState.PossMoves();
-            tree.Root.NotLeafAnyMore();
-
-            for (short i = 0; i < possActions.GetLength(0); i++)
-            {
-                tree.Add(new Node(tree.Root, currentState.ExportState(), possActions[i]));
-            }//for
-        }
-
-        //**********************************************************************
+        //**********************************************************
         //Public Methods
-        //Finds the next possible move and returns it
-        public async Task<byte[]> Next()
+        //Finds and Returns the best possible move
+        public async Task<IAction> Next()
         {
-            tree.Clear();
-            tree.Add(new Node(currentState.ExportState(), new byte[] { 0, 0 }, !aiSide));
-            CreateBaseNodes();
+            Stopwatch stopwatch;//This will keep track of the elapsed time
+            State tempState = new State();
+            tempState.ImportState(currState);
+            tree = new Tree(new Node(tempState, new Action(PrevPlayer(aiSide))));
+            Expand(tree.root);//Expands the root node so that we know the poss moves
+            double end = (level + 1) * 100; //The amount of time the algorithm spends on each poss move
 
-            numberOfTotalVisits = 0;
-
-            for (int i = 0; i < itteration; i++)
+            for (int i = 0; i < tree.root.Children.Count; i++)
             {
-                Node selected = tree.Select();
-                if (selected.NumberOfVisits != 1)
-                    Simulate(selected);
+                stopwatch = new Stopwatch();
+                stopwatch.Start();
 
-                //if the node is a leaf node give him children
-                else if (selected.IsLeaf)
-                    Expand(selected);
-                else
-                    Simulate(selected);
-            }//for
+                while (stopwatch.ElapsedMilliseconds <= end)
+                {
+                    Node selected = tree.Select(tree.root.Children[i]);
+                    if (selected.NumberOfVisits == 0)
+                        Expand(selected);
 
-            return tree.SearchForBestMove();
+                    Simulate(selected);
+                }
+            }
+            return FindBestMove();
         }
     }
 }
