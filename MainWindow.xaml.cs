@@ -20,7 +20,7 @@ namespace TicTacToe
         private Border[,] szegelyek;//the borders so it's easier to update their sizes
         private Label[,] labels;//the labels so it's easier to update their sizes and values
         private byte Checksize = 3;//how many do the player need to win default (3)
-        private Menu menu = new Menu();//the menu
+        private Menu menu;//the menu
         private bool inprogress;//is the game in progress
         private bool AIcontrolled = false; //is the ai playing
         private bool aiside;//which side does the ai playing
@@ -41,8 +41,6 @@ namespace TicTacToe
 
             //Creates the playfield
             SetupWindow().GetAwaiter();
-            //Gives the menu's Done button a Handler
-            menu.Donebtn.Click += Done_Click;
         }
 
         //--------------------------------------------------------------------------------------------
@@ -175,11 +173,13 @@ namespace TicTacToe
             //if the ai starts make the first move
             if (aiside)
             {
+                HourglassGif.Visibility = Visibility.Visible;
                 IAction temp = await ameba.Next();
                 await ameba.Change(temp.Move[0], temp.Move[1]);
                 //Update the label
                 ChangeLabel(!side, temp.Move[0], temp.Move[1]);
                 side = false;
+                HourglassGif.Visibility = Visibility.Hidden;
             }
         }
 
@@ -261,11 +261,13 @@ namespace TicTacToe
                 side = !side;
             else
             {
+                HourglassGif.Visibility = Visibility.Visible;
                 //The moves which the ai will make
                 IAction temp = await ameba.Next();
                 await ameba.Change(temp.Move[0], temp.Move[1]);
                 //Update the label
                 ChangeLabel(!side, temp.Move[0], temp.Move[1]);
+                HourglassGif.Visibility = Visibility.Hidden;
             }//else
             //If we got a Winner or Draw
             if (ameba.isOver)
@@ -298,8 +300,11 @@ namespace TicTacToe
                         break;
 
                     case Key.M:
+                        //Creates a new Menu Window
+                        menu = new Menu();
+                        //Gives the menu's Done button a Handler
+                        menu.Donebtn.Click += Done_Click;
                         menu.Show();
-
                         break;
 
                     default:
@@ -374,7 +379,7 @@ namespace TicTacToe
             else
                 aiType = 2;
             //Hides the menu
-            menu.Hide();
+            menu.Close();
 
             //The program creates a new board for us
             SetupWindow().GetAwaiter();
@@ -390,7 +395,8 @@ namespace TicTacToe
         //So it stops the menu as well
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            menu.Close();
+            if (menu != null)
+                menu.Close();
         }
     }
 }

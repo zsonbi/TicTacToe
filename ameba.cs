@@ -73,7 +73,7 @@ namespace TicTacToe
         //Gets the next move of the bot
         public async Task<IAction> Next()
         {
-            return await ai.Next();
+            return await Task.Run(() => ai.Next());
         }
     }
 }

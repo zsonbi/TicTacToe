@@ -11,10 +11,9 @@ namespace TicTacToe
         private IState currState; //The real state of the game
         private IState simulationState;//The state of the game which we will use to test the moves
         private Random rnd = new Random();//Random -,-
-        private int itteration = 4000; //How many itterations does we want to run the program
         private Tree tree;//The tree
         private byte NumberOfPlayers = 2;//How many players are there
-        private byte level = 1; //The level of the ai
+        private byte level = 0; //The level of the ai
 
         //The player as the AI plays
         public byte aiSide { get; private set; }
