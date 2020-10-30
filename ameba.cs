@@ -35,7 +35,7 @@ namespace TicTacToe
         public static bool Side { get; private set; }
 
         //Constructor
-        public ameba(byte x = 3, byte y = 3, byte checksize = 3, bool aiControlled = false, bool aiSide = false)
+        public ameba(byte x = 3, byte y = 3, byte checksize = 3, bool aiControlled = false, bool aiSide = false, byte aiType = 1)
         {
             X = x;
             Y = y;
@@ -44,7 +44,19 @@ namespace TicTacToe
             gameState = new State();
             if (aiControlled)
             {
-                ai = new MiniMaxAI(aiSide, gameState);
+                switch (aiType)
+                {
+                    case 0:
+                        ai = new MiniMaxAI((byte)(aiSide ? 1 : 2), gameState);
+                        break;
+
+                    case 1:
+                        ai = new MCTSAI((byte)(aiSide ? 1 : 2), gameState);
+                        break;
+
+                    default:
+                        break;
+                }
             }//if
         }
 
@@ -53,14 +65,13 @@ namespace TicTacToe
         //Changes the indexed element to the side which comes next
         public async Task Change(byte y, byte x)
         {
-            gameState.Change(y, x, ameba.Side);
-
+            gameState.Change(new Action(new byte[] { y, x }, (byte)(Side ? 1 : 2)));
             Side = !Side;
         }
 
         //------------------------------------------------------------------
         //Gets the next move of the bot
-        public async Task<byte[]> Next()
+        public async Task<IAction> Next()
         {
             return await ai.Next();
         }

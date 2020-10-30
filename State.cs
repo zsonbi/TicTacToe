@@ -15,10 +15,7 @@ namespace TicTacToe
         public bool isOver { get; private set; }
 
         //Determines who won true-'X' false-'O'
-        public bool WhoWon { get; private set; }
-
-        //Determines if the game ended in draw
-        public bool Draw { get; private set; }
+        public byte whoWon { get; private set; }
 
         //The indexes of the cell which won
         public List<byte[]> WinnerCells { get => winnerCells; }
@@ -48,8 +45,8 @@ namespace TicTacToe
                 if (counter == ameba.Checksize)
                 {
                     isOver = true;
-                    WhoWon = 1 == selected;
-                    Draw = false;
+                    whoWon = selected;
+
                     for (byte c = (byte)(x - indexer); c <= i; c++)
                     {
                         winnerCells.Add(new byte[] { y, c });
@@ -83,8 +80,8 @@ namespace TicTacToe
                 if (counter == ameba.Checksize)
                 {
                     isOver = true;
-                    WhoWon = 1 == selected;
-                    Draw = false;
+                    whoWon = selected;
+
                     for (byte c = (byte)(y - indexer); c <= i; c++)
                     {
                         winnerCells.Add(new byte[] { c, x });
@@ -124,8 +121,8 @@ namespace TicTacToe
                 if (counter == ameba.Checksize)
                 {
                     isOver = true;
-                    WhoWon = 1 == selected;
-                    Draw = false;
+                    whoWon = selected;
+
                     tempy = (sbyte)(y - indexer);
                     for (byte c = (byte)(x - indexer); c <= i; c++)
                     {
@@ -167,8 +164,8 @@ namespace TicTacToe
                 if (counter == ameba.Checksize)
                 {
                     isOver = true;
-                    WhoWon = 1 == selected;
-                    Draw = false;
+                    whoWon = selected;
+
                     tempy = (sbyte)(y - indexer);
                     for (sbyte c = (sbyte)(x + indexer); c >= 0; c--)
                     {
@@ -183,39 +180,39 @@ namespace TicTacToe
         //*********************************************************************
         //Public Methods
         //Changes the cell at the cordinate to the side value which comes next
-        public void Change(byte y, byte x, bool Side)
+        public void Change(IAction action)
         {
-            if (board[y, x] != 0)
+            if (board[action.Move[0], action.Move[1]] != 0)
             {
                 throw new Exception("The cell is already occupied");
             }
 
-            board[y, x] = Side ? (byte)1 : (byte)2;
+            board[action.Move[0], action.Move[1]] = action.player;
             counter--;
             if (counter == 0)
             {
-                isOver = true;
-                Draw = true;
+                this.whoWon = 0;
+                this.isOver = true;
             }
 
-            HorizontalCheck(y, x);
-            VerticalCheck(y, x);
-            DiagonalLeftCheck(y, x);
-            DiagonalRightCheck(y, x);
+            HorizontalCheck(action.Move[0], action.Move[1]);
+            VerticalCheck(action.Move[0], action.Move[1]);
+            DiagonalLeftCheck(action.Move[0], action.Move[1]);
+            DiagonalRightCheck(action.Move[0], action.Move[1]);
         }
 
         //---------------------------------------------------------
         //Returns Empty places on the board (where the user can move)
-        public byte[][] PossMoves()
+        public IAction[] PossMoves(byte player)
         {
-            List<byte[]> output = new List<byte[]>();
+            List<IAction> output = new List<IAction>();
             for (byte i = 0; i < ameba.Y; i++)
             {
                 for (byte j = 0; j < ameba.X; j++)
                 {
                     if (board[i, j] == 0)
                     {
-                        output.Add(new byte[] { i, j });
+                        output.Add(new Action(new byte[] { i, j }, player));
                     }//if
                 }//for
             }//for
@@ -225,25 +222,27 @@ namespace TicTacToe
 
         //------------------------------------------------------------------
         //Import the State
-        public void ImportState(byte[,] state)
+        public void ImportState(IState state)
         {
-            isOver = false;
-            Draw = false;
-            for (int i = 0; i < ameba.Y; i++)
-            {
-                for (int j = 0; j < ameba.X; j++)
-                {
-                    board[i, j] = state[i, j];
-                }
-            }
-            counter = (short)PossMoves().GetLength(0);
+            this.isOver = state.isOver;
+            this.whoWon = state.whoWon;
+            board = state.ExportBoard();
+            counter = (short)state.PossMoves(1).Length;
         }
 
         //------------------------------------------------------------------
         //Exports the state
-        public byte[,] ExportState()
+        public byte[,] ExportBoard()
         {
-            return board;
+            byte[,] output = new byte[ameba.Y, ameba.X];
+            for (int i = 0; i < ameba.Y; i++)
+            {
+                for (int j = 0; j < ameba.X; j++)
+                {
+                    output[i, j] = board[i, j];
+                }
+            }
+            return output;
         }
     }
 }

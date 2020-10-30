@@ -11,22 +11,19 @@ namespace TicTacToe
         //If the game is over
         bool isOver { get; }
 
-        //Who won true(player who comes first) false(player who comes second)
-        bool WhoWon { get; }
-
-        //If the game ended in draw
-        bool Draw { get; }
+        //Who won (0 is a draw)
+        byte whoWon { get; }
 
         //Gets the Possible spaces where we can move
-        byte[][] PossMoves();
+        IAction[] PossMoves(byte player);
 
         //Changes the tile/cell at the index to the given Side
-        void Change(byte y, byte x, bool Side);
+        void Change(IAction action);
 
         //Exports the current state
-        byte[,] ExportState();
+        byte[,] ExportBoard();
 
         //Imports the state from the array
-        void ImportState(byte[,] state);
+        void ImportState(IState state);
     }
 }

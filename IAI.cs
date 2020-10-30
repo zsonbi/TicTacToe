@@ -9,9 +9,9 @@ namespace TicTacToe
     internal interface IAI
     {
         //The side which the player plays as
-        bool aiSide { get; }
+        byte aiSide { get; }
 
         //Gets the Next best move
-        Task<byte[]> Next();
+        Task<IAction> Next();
     }
 }
