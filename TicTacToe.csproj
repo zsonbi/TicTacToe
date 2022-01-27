@@ -83,6 +83,7 @@
     <Compile Include="MCTSAI.cs" />
     <Compile Include="MiniMaxAI.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="PatternAI.cs" />
     <Compile Include="State.cs" />
     <Compile Include="ameba.cs" />
     <Compile Include="Tree.cs" />

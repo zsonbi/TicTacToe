@@ -68,7 +68,7 @@ namespace TicTacToe
             if (NumberOfVisits == 0)
                 MeanValue = double.MaxValue;
             else
-                MeanValue = (double)(Value / NumberOfVisits) + 14.1 * Math.Sqrt(Math.Log(numberOfTotalVisits) / this.NumberOfVisits);
+                MeanValue = (double)(Value / NumberOfVisits) + 2 * Math.Sqrt(Math.Log(numberOfTotalVisits) / this.NumberOfVisits);
 
             return MeanValue;
         }
@@ -86,11 +86,15 @@ namespace TicTacToe
         {
             if (Winner == 0)
             {
-                Value += 5;
+                Value += 1;
             }
             else if (Winner == Action.player)
-                Value += 10;
+                Value += 5;
+            else
+                Value += -3;
+
             NumberOfVisits += 1;
+
             if (parent != null)
                 parent.Update(Winner);
         }

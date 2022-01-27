@@ -149,6 +149,20 @@ namespace TicTacToe
             MakeBorders();
         }
 
+        //-------------------------------------------------------------------------------------
+        private async Task PlayAgainstItself()
+        {
+            System.Diagnostics.Stopwatch timer;
+            while (!ameba.isOver)
+            {
+                timer = new System.Diagnostics.Stopwatch();
+                timer.Start();
+                IAction nextMove = await ameba.PlayAgainstIstelfNextMove();
+                ChangeLabel(nextMove.player == 1, nextMove.Move[0], nextMove.Move[1]);
+                await Task.Delay((int)(100 - timer.Elapsed.TotalMilliseconds >= 0 ? 100 - timer.Elapsed.TotalMilliseconds : 0));
+            }
+        }
+
         //--------------------------------------------------------------------------------------
         //Resets the game and the board
         private async Task Reset()
@@ -161,7 +175,7 @@ namespace TicTacToe
 
             //opposite of the aiside if there is an ai
             side = AIcontrolled ? !aiside : true;
-            ameba = new ameba(x, y, Checksize, AIcontrolled, aiside, aiType);
+
             for (int i = 0; i < y; i++)
             {
                 for (int j = 0; j < x; j++)
@@ -169,9 +183,16 @@ namespace TicTacToe
                     labels[i, j].Content = "";
                 }//for
             }//for
-
+            if (!onlyAIPlays)
+                ameba = new ameba(x, y, Checksize, AIcontrolled, aiside, aiType);
+            //if the user want to see the 2 ai pitted against each other
+            else
+            {
+                ameba = new ameba(aiType, x, y, Checksize);
+                await PlayAgainstItself();
+            }
             //if the ai starts make the first move
-            if (aiside)
+            if (aiside && !onlyAIPlays)
             {
                 HourglassGif.Visibility = Visibility.Visible;
                 IAction temp = await ameba.Next();

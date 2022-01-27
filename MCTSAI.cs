@@ -13,7 +13,7 @@ namespace TicTacToe
         private Random rnd = new Random();//Random -,-
         private Tree tree;//The tree
         private byte NumberOfPlayers = 2;//How many players are there
-        private byte level = 0; //The level of the ai
+        private byte level = 4; //The level of the ai
 
         //The player as the AI plays
         public byte aiSide { get; private set; }
@@ -113,7 +113,7 @@ namespace TicTacToe
             tempState.ImportState(currState);
             tree = new Tree(new Node(tempState, new Action(PrevPlayer(aiSide))));
             Expand(tree.root);//Expands the root node so that we know the poss moves
-            double end = (level + 1) * 100; //The amount of time the algorithm spends on each poss move
+            double end = (level + 1) * 50; //The amount of time the algorithm spends on each poss move
 
             for (int i = 0; i < tree.root.Children.Count; i++)
             {
